@@ -1,0 +1,118 @@
+import 'package:flutter/material.dart';
+import '../providers/theme_provider.dart';
+// Import the screens that the navbar navigates to directly
+import 'expiring.dart'; 
+import 'add_item_screen.dart'; 
+import 'account_screen.dart';
+import 'dishes.dart';
+import 'home.dart';
+
+// --- COLOR PALETTE ---
+class AppColors {
+  static const Color expiringRed = Color(0xFF5C8A94); // Used for highlight color
+}
+
+class CustomBottomNavBar extends StatelessWidget {
+  // Callback function for tabs that switch content within the parent (Home, Search, Profile)
+  final Function(int) onTabContentTapped; 
+  final int currentIndex;
+  // The BuildContext from the parent Scaffold/Screen, necessary for Navigator.of(context)
+  final BuildContext navContext; 
+
+  const CustomBottomNavBar({
+    super.key,
+    required this.onTabContentTapped,
+    required this.currentIndex,
+    required this.navContext, // Crucial for navigation
+  });
+
+  // --- NAVIGATION HANDLER: Handles both page transitions and state updates ---
+  void _handleNavigation(int index) {
+    if (index == 3) {
+      // 1. Expire (Trash icon): Navigate to a new page (ExpiringItemsScreen)
+      Navigator.push(
+        navContext,
+        MaterialPageRoute(
+          builder: (context) => const ExpiringItemsScreen(),
+        ),
+      );
+    } else if (index == 2) {
+      // 2. Add (Plus icon): Navigate to a new page (AddItem)
+      Navigator.push(
+        navContext,
+        MaterialPageRoute(
+          builder: (context) => const AddItemScreen(),
+        ),
+      );
+    } 
+    else if (index == 4) {
+      // 2. Add (Plus icon): Navigate to a new page (AddItem)
+      Navigator.push(
+        navContext,
+        MaterialPageRoute(
+          builder: (context) => const ProfileCheck(),
+        ),
+      );
+    }
+    else if (index == 0) {
+      // 2. Add (Plus icon): Navigate to a new page (AddItem)
+      Navigator.push(
+        navContext,
+        MaterialPageRoute(
+          builder: (context) => const MainHomeScreen(),
+        ),
+      );
+    } else if (index == 1) {
+      // 2. Add (Plus icon): Navigate to a new page (AddItem)
+      Navigator.push(
+        navContext,
+        MaterialPageRoute(
+          builder: (context) => const RecipeApp(),
+        ),
+      );
+    }
+    else {
+      // 3. Home (0), Search (1), Profile (4): Update the parent state to switch content
+      onTabContentTapped(index);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final backgroundColor = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+    
+    return BottomNavigationBar(
+      elevation: 10,
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: AppColors.expiringRed,
+      unselectedItemColor: isDarkMode ? const Color(0xFF808080) : Colors.grey,
+      backgroundColor: backgroundColor,
+      items: const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home_outlined),
+          label: 'Home',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.search),
+          label: 'Search',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.add_circle_outline, size: 30),
+          label: 'Add',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.delete_outline),
+          label: 'Expire',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person_outline),
+          label: 'Profile',
+        ),
+      ],
+      // Pass the current index and the internal handler
+      currentIndex: currentIndex,
+      onTap: _handleNavigation, 
+    );
+  }
+}
