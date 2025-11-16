@@ -241,6 +241,94 @@ class _AddItemScreenState extends State<AddItemScreen> {
     );
   }
 
+  // Helper widget for date picker fields
+  Widget _buildDatePickerField({
+    required String label,
+    required String hintText,
+    required TextEditingController controller,
+    bool isRequired = false,
+  }) {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final inputBg = isDarkMode ? const Color(0xFF2A2A2A) : cardColor;
+    final inputBorder = isDarkMode ? const Color(0xFF3A3A3A) : Colors.transparent;
+    final hintColor = isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[400]!;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black87;
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            _buildSectionTitle(TranslationHelper.t(label, _getUrduLabel(label))),
+            if (isRequired)
+              const Text(
+                ' *',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.red,
+                ),
+              ),
+          ],
+        ),
+        InkWell(
+          onTap: () async {
+            final DateTime? picked = await showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime(2000),
+              lastDate: DateTime(2100),
+              builder: (context, child) {
+                return Theme(
+                  data: Theme.of(context).copyWith(
+                    colorScheme: ColorScheme.light(
+                      primary: primaryColor,
+                      onPrimary: Colors.white,
+                      surface: isDarkMode ? const Color(0xFF2A2A2A) : Colors.white,
+                      onSurface: isDarkMode ? const Color(0xFFE1E1E1) : Colors.black,
+                    ),
+                    dialogBackgroundColor: isDarkMode ? const Color(0xFF2A2A2A) : Colors.white,
+                  ),
+                  child: child!,
+                );
+              },
+            );
+            
+            if (picked != null) {
+              setState(() {
+                controller.text = "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+              });
+            }
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+            decoration: BoxDecoration(
+              color: inputBg,
+              borderRadius: BorderRadius.circular(12.0),
+              border: Border.all(color: inputBorder),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  controller.text.isEmpty ? hintText : controller.text,
+                  style: TextStyle(
+                    color: controller.text.isEmpty ? hintColor : textColor,
+                    fontSize: 16,
+                  ),
+                ),
+                Icon(
+                  Icons.calendar_today,
+                  color: primaryColor,
+                  size: 20,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   // Helper widget for standard text inputs (Name, Date, Notes)
   Widget _buildCustomTextField({
     required String label,
@@ -526,18 +614,16 @@ class _AddItemScreenState extends State<AddItemScreen> {
               const SizedBox(height: 30),
               _buildQuantitySection(),
               const SizedBox(height: 30),
-              _buildCustomTextField(
+              _buildDatePickerField(
                 label: 'Purchase Date',
                 hintText: TranslationHelper.t('YYYY-MM-DD', 'سال-ماہ-دن'),
                 controller: _purchaseDateController,
-                keyboardType: TextInputType.datetime,
               ),
               const SizedBox(height: 30),
-              _buildCustomTextField(
+              _buildDatePickerField(
                 label: 'Expiry Date',
                 hintText: TranslationHelper.t('YYYY-MM-DD', 'سال-ماہ-دن'),
                 controller: _expiryDateController,
-                keyboardType: TextInputType.datetime,
               ),
               const SizedBox(height: 30),
               _buildCustomTextField(
