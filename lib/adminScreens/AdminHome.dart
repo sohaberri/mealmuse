@@ -12,11 +12,8 @@ class AdminApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Admin Account',
-      debugShowCheckedModeBanner: false,
-      home: AdminAccountScreen(),
-    );
+    // Don't wrap in MaterialApp - use existing app's MaterialApp
+    return const AdminAccountScreen();
   }
 }
 

@@ -98,15 +98,17 @@ class _LoginScreenState extends State<LoginScreen> {
         final userEmail = userCredential.user!.email?.toLowerCase().trim();
         
         if (userEmail == 'admin@mealmuse.com') {
-          // Navigate to admin screen
-          Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => const AdminApp(),
-          ));
+          // Navigate to admin screen and clear all previous routes
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const AdminApp()),
+            (Route<dynamic> route) => false,
+          );
         } else {
-          // Navigate to regular home screen
-          Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => const MainHomeScreen(),
-          ));
+          // Navigate to regular home screen and clear all previous routes
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const MainHomeScreen()),
+            (Route<dynamic> route) => false,
+          );
         }
       }
     } on FirebaseAuthException catch (e) {

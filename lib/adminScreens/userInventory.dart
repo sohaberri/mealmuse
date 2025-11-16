@@ -18,6 +18,7 @@ class _UserInventoryState extends State<UserInventory> {
 
   @override
   Widget build(BuildContext context) {
+    // Force light mode for admin screens
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
@@ -83,6 +84,7 @@ class _UserInventoryState extends State<UserInventory> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: Card(
+        color: Colors.white,
         elevation: 4,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -119,29 +121,30 @@ class _UserInventoryState extends State<UserInventory> {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       widget.user.displayName,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey,
+                        color: Colors.grey[700],
                       ),
                     ),
                     Text(
                       widget.user.email,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey,
+                        color: Colors.grey[600],
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       'Joined: ${widget.user.formattedCreatedAt}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
-                        color: Colors.grey,
+                        color: Colors.grey[600],
                       ),
                     ),
                   ],
@@ -321,6 +324,7 @@ class _UserInventoryState extends State<UserInventory> {
 
   Widget _buildInventoryItemCard(String itemId, Map<String, dynamic> data) {
     return Card(
+      color: Colors.white,
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -354,23 +358,24 @@ class _UserInventoryState extends State<UserInventory> {
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '${data['quantity'] ?? '0'} ${data['unit'] ?? ''}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey,
+                      color: Colors.grey[700],
                     ),
                   ),
                   if (data['category'] != null) ...[
                     const SizedBox(height: 2),
                     Text(
                       data['category'],
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey,
+                        color: Colors.grey[600],
                       ),
                     ),
                   ],
@@ -493,6 +498,7 @@ class _UserInventoryState extends State<UserInventory> {
 
   Widget _buildRecipeCard(String recipeId, Map<String, dynamic> data) {
     return Card(
+      color: Colors.white,
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -530,6 +536,7 @@ class _UserInventoryState extends State<UserInventory> {
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -557,9 +564,9 @@ class _UserInventoryState extends State<UserInventory> {
                   if (data['savedAt'] != null) 
                     Text(
                       'Saved: ${_formatSavedDate(data['savedAt'])}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
-                        color: Colors.grey,
+                        color: Colors.grey[600],
                       ),
                     ),
                 ],
@@ -586,14 +593,14 @@ class _UserInventoryState extends State<UserInventory> {
         Icon(
           icon,
           size: 16,
-          color: Colors.grey,
+          color: Colors.grey[700],
         ),
         const SizedBox(width: 4),
         Text(
           text,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
-            color: Colors.grey,
+            color: Colors.grey[700],
           ),
         ),
       ],
@@ -601,16 +608,13 @@ class _UserInventoryState extends State<UserInventory> {
   }
 
   void _showDeleteInventoryItemDialog(String itemId, String itemName) {
-    final isDarkMode = ThemeProvider().darkModeEnabled;
-    final dialogBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
-    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
-    
+    // Force light mode for admin dialogs
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: dialogBg,
-        title: Text('Delete Inventory Item', style: TextStyle(color: textColor)),
-        content: Text('Are you sure you want to delete "$itemName" from ${widget.user.username}\'s inventory?', style: TextStyle(color: textColor)),
+        backgroundColor: Colors.white,
+        title: const Text('Delete Inventory Item', style: TextStyle(color: Colors.black)),
+        content: Text('Are you sure you want to delete "$itemName" from ${widget.user.username}\'s inventory?', style: const TextStyle(color: Colors.black)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -632,16 +636,13 @@ class _UserInventoryState extends State<UserInventory> {
   }
 
   void _showDeleteSavedRecipeDialog(String recipeId, String recipeTitle) {
-    final isDarkMode = ThemeProvider().darkModeEnabled;
-    final dialogBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
-    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
-    
+    // Force light mode for admin dialogs
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: dialogBg,
-        title: Text('Delete Saved Recipe', style: TextStyle(color: textColor)),
-        content: Text('Are you sure you want to remove "$recipeTitle" from ${widget.user.username}\'s saved recipes?', style: TextStyle(color: textColor)),
+        backgroundColor: Colors.white,
+        title: const Text('Delete Saved Recipe', style: TextStyle(color: Colors.black)),
+        content: Text('Are you sure you want to remove "$recipeTitle" from ${widget.user.username}\'s saved recipes?', style: const TextStyle(color: Colors.black)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
