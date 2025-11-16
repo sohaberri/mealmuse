@@ -30,19 +30,20 @@ class _LoginScreenState extends State<LoginScreen> {
     required IconData icon,
     bool isPassword = false,
     required TextEditingController controller,
+    required bool isDarkMode,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: TextField(
         controller: controller,
         obscureText: isPassword,
-        style: const TextStyle(color: Colors.black87),
+        style: TextStyle(color: isDarkMode ? const Color(0xFFE1E1E1) : Colors.black87),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(color: Colors.grey[600]),
-          prefixIcon: Icon(icon, color: Colors.grey[600]),
+          hintStyle: TextStyle(color: isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[600]),
+          prefixIcon: Icon(icon, color: isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[600]),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: isDarkMode ? const Color(0xFF3A3A3A) : Colors.white,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.0),
             borderSide: BorderSide.none,
@@ -299,9 +300,13 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final backgroundColor = isDarkMode ? const Color(0xFF121212) : _darkBackground;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : _primaryText;
+    final secondaryTextColor = isDarkMode ? const Color(0xFFB0B0B0) : Colors.black54;
     
     return Scaffold(
-      backgroundColor: _darkBackground,
+      backgroundColor: backgroundColor,
       body: ValueListenableBuilder<Locale?>(
         valueListenable: LocaleProvider().localeNotifier,
         builder: (context, locale, _) {
@@ -332,12 +337,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     hintText: TranslationHelper.t('Email', 'ای میل'), 
                     icon: Icons.mail_outline,
                     controller: _emailController,
+                    isDarkMode: isDarkMode,
                   ),
                   _buildTextField(
                     hintText: TranslationHelper.t('Password', 'پاس ورڈ'), 
                     icon: Icons.lock_outline, 
                     isPassword: true,
                     controller: _passwordController,
+                    isDarkMode: isDarkMode,
                   ),
                   
                   // Forgot Password Button
@@ -384,7 +391,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     TranslationHelper.t('Lets Start\nCooking!', 'چلیں\nپکانا شروع کریں!'),
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: _primaryText,
+                      color: textColor,
                       fontSize: size.width * 0.09,
                       fontWeight: FontWeight.bold,
                       height: 1.2,
@@ -398,18 +405,21 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: ElevatedButton(
                       onPressed: () {
                         if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+                          final dialogBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+                          final dialogTextColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: const Text('Missing Information'),
-                                content: const Text('Please enter both email and password.'),
+                                backgroundColor: dialogBg,
+                                title: Text(TranslationHelper.t('Missing Information', 'معلومات غائب ہیں'), style: TextStyle(color: dialogTextColor)),
+                                content: Text(TranslationHelper.t('Please enter both email and password.', 'براہ کرم ای میل اور پاس ورڈ دونوں درج کریں۔'), style: TextStyle(color: dialogTextColor)),
                                 actions: [
                                   TextButton(
                                     onPressed: () {
                                       Navigator.of(context).pop();
                                     },
-                                    child: const Text('OK'),
+                                    child: Text(TranslationHelper.t('OK', 'ٹھیک ہے')),
                                   ),
                                 ],
                               );
@@ -453,12 +463,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: RichText(
                       text: TextSpan(
                         text: TranslationHelper.t('Dont have an account? ', 'اکاؤنٹ نہیں ہے؟ '),
-                        style: TextStyle(color: Colors.black54, fontSize: 16),
+                        style: TextStyle(color: secondaryTextColor, fontSize: 16),
                         children: <TextSpan>[
                           TextSpan(
                             text: TranslationHelper.t('Sign up', 'سائن اپ'),
                             style: TextStyle(
-                              color: _primaryText,
+                              color: textColor,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

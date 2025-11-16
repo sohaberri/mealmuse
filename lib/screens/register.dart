@@ -123,13 +123,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     bool isPassword = false,
     required TextEditingController controller,
     VoidCallback? onChanged,
+    required bool isDarkMode,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: TextField(
         controller: controller,
         obscureText: isPassword,
-        style: const TextStyle(color: Colors.black87),
+        style: TextStyle(color: isDarkMode ? const Color(0xFFE1E1E1) : Colors.black87),
         onChanged: (value) {
           if (onChanged != null) {
             onChanged();
@@ -137,10 +138,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         },
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(color: Colors.grey[600]),
-          prefixIcon: Icon(icon, color: Colors.grey[600]),
+          hintStyle: TextStyle(color: isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[600]),
+          prefixIcon: Icon(icon, color: isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[600]),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: isDarkMode ? const Color(0xFF3A3A3A) : Colors.white,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.0),
             borderSide: BorderSide.none,
@@ -355,7 +356,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   // Widget to show password requirements
-  Widget _buildPasswordRequirements() {
+  Widget _buildPasswordRequirements(Color textColor) {
     final password = _passwordController.text;
     
     return Padding(
@@ -366,7 +367,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           Text(
             TranslationHelper.t('Password must contain:', 'پاس ورڈ میں شامل ہونا چاہیے:'),
             style: TextStyle(
-              color: _primaryText.withOpacity(0.8),
+              color: textColor,
               fontSize: 12,
             ),
           ),
@@ -428,9 +429,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final backgroundColor = isDarkMode ? const Color(0xFF121212) : _primaryText;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : _black;
+    final secondaryTextColor = isDarkMode ? const Color(0xFFB0B0B0) : _primaryText.withOpacity(0.8);
     
     return Scaffold(
-      backgroundColor: _primaryText,
+      backgroundColor: backgroundColor,
       body: ValueListenableBuilder<Locale?>(
         valueListenable: LocaleProvider().localeNotifier,
         builder: (context, locale, _) {
@@ -464,7 +469,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   Text(
                     TranslationHelper.t('Lets Create\nYour Account!', 'چلیں\nآپ کا اکاؤنٹ بنائیں!'),
                     style: TextStyle(
-                      color: _black,
+                      color: textColor,
                       fontSize: size.width * 0.09,
                       height: 1.2,
                     ),
@@ -496,12 +501,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     hintText: TranslationHelper.t('Email', 'ای میل'), 
                     icon: Icons.mail_outline,
                     controller: _emailController,
+                    isDarkMode: isDarkMode,
                   ),
                   _buildTextField(
                     hintText: TranslationHelper.t('Username', 'صارف نام'), 
                     icon: Icons.person_outline,
                     controller: _usernameController,
                     onChanged: () => setState(() {}), // Trigger rebuild when username changes
+                    isDarkMode: isDarkMode,
                   ),
                   // Username requirements
                   // _buildUsernameRequirements(),
@@ -511,15 +518,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     isPassword: true,
                     controller: _passwordController,
                     onChanged: () => setState(() {}), // Trigger rebuild when password changes
+                    isDarkMode: isDarkMode,
                   ),
                   // Password requirements
-                  _buildPasswordRequirements(),
+                  _buildPasswordRequirements(secondaryTextColor),
                   _buildTextField(
                     hintText: TranslationHelper.t('Retype Password', 'پاس ورڈ دوبارہ لکھیں'), 
                     icon: Icons.lock_outline, 
                     isPassword: true,
                     controller: _confirmPasswordController,
                     onChanged: () => setState(() {}), // Trigger rebuild when confirm password changes
+                    isDarkMode: isDarkMode,
                   ),
                   
                   const SizedBox(height: 40),
@@ -558,12 +567,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     child: RichText(
                       text: TextSpan(
                         text: TranslationHelper.t('Already have an account? ', 'پہلے سے اکاؤنٹ موجود ہے؟ '),
-                        style: TextStyle(color: _primaryText.withOpacity(0.8), fontSize: 16),
+                        style: TextStyle(color: secondaryTextColor, fontSize: 16),
                         children: <TextSpan>[
                           TextSpan(
                             text: TranslationHelper.t('Sign In', 'سائن اِن'),
                             style: TextStyle(
-                              color: _primaryText,
+                              color: isDarkMode ? const Color(0xFFE1E1E1) : _primaryText,
                             ),
                           ),
                         ],

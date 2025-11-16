@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'login.dart'; // Import the LoginScreen
 import 'register.dart'; // Import the RegisterScreen
+import '../providers/theme_provider.dart';
 import '../providers/locale_provider.dart';
 import '../utils/translation_helper.dart';
 
@@ -20,9 +21,12 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final backgroundColor = isDarkMode ? const Color(0xFF121212) : Colors.white;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
 
     return Scaffold(
-      backgroundColor: Colors.white, // Background for the top content area
+      backgroundColor: backgroundColor, // Background for the top content area
       body: ValueListenableBuilder<Locale?>(
         valueListenable: LocaleProvider().localeNotifier,
         builder: (context, locale, _) {
@@ -48,7 +52,7 @@ class HomePage extends StatelessWidget {
                     Text(
                       'Meal Muse',
                       style: TextStyle(
-                        color: Colors.black,
+                        color: textColor,
                         fontSize: 42,
                         fontWeight: FontWeight.w900,
                       ),
@@ -60,7 +64,7 @@ class HomePage extends StatelessWidget {
                       textAlign: TextAlign.center,
                       textDirection: TextDirection.ltr,
                       style: TextStyle(
-                        color: Colors.black,
+                        color: textColor,
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                       ),
@@ -109,7 +113,7 @@ class HomePage extends StatelessWidget {
                       child: Text(
                         TranslationHelper.t('Login', 'لاگ اِن'),
                         style: TextStyle(
-                          color: Colors.black,
+                          color: isDarkMode ? Colors.black : Colors.black,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
@@ -151,7 +155,7 @@ class HomePage extends StatelessWidget {
                       child: Text(
                         TranslationHelper.t('Register', 'رجسٹر کریں'),
                         style: TextStyle(
-                          color: Colors.black,
+                          color: isDarkMode ? Colors.black : Colors.black,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
