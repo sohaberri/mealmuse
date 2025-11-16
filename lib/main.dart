@@ -30,11 +30,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'screens/homepage.dart';
+import 'screens/expiring.dart';
 import 'firebase_service.dart';
+import 'services/notification_service.dart';
 import 'providers/theme_provider.dart';
 import 'providers/locale_provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-// import 'screens/expiring.dart';
+
+// Global navigator key for handling navigation from notifications
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   // Ensure Flutter bindings are initialized
@@ -85,8 +89,42 @@ Future<void> main() async {
   
   runApp(const MyApp());
 }
-class MyApp extends StatelessWidget {
+
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  final NotificationService _notificationService = NotificationService();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    // Initialize notification service
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _notificationService.initialize(context);
+      _notificationService.scheduleDailyCheck();
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      // Check for expiring items when app comes to foreground
+      _notificationService.onAppResume();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,6 +134,7 @@ class MyApp extends StatelessWidget {
       builder: (context, locale, _) {
         final isDark = ThemeProvider().darkModeEnabled;
         return MaterialApp(
+          navigatorKey: navigatorKey,
           debugShowCheckedModeBanner: false,
           home: const HomePage(),
           locale: locale,
@@ -106,6 +145,9 @@ class MyApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           theme: isDark ? ThemeData.dark() : ThemeData.light(),
+          routes: {
+            '/expiring': (context) => const ExpiringItemsScreen(),
+          },
         );
       },
     );

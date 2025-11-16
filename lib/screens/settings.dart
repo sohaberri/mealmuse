@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../providers/theme_provider.dart';
 import '../providers/locale_provider.dart';
 import '../utils/translation_helper.dart';
+import '../services/notification_service.dart';
 import 'languages.dart';
 import 'navbar.dart';
 import 'homepage.dart';
@@ -29,8 +30,10 @@ class Setting_menu extends StatefulWidget {
 class _Setting_menuState extends State<Setting_menu> {
   // State variables for toggles
   late bool _darkModeEnabled;
-  bool _notificationsEnabled = true;
+  bool _notificationsEnabled = false;
+  int _notificationDays = 3;
   final ThemeProvider _themeProvider = ThemeProvider();
+  final NotificationService _notificationService = NotificationService();
 
   @override
   void initState() {
@@ -38,6 +41,15 @@ class _Setting_menuState extends State<Setting_menu> {
     _darkModeEnabled = _themeProvider.darkModeEnabled;
     _themeProvider.addListener(_onThemeChanged);
     LocaleProvider().localeNotifier.addListener(_onLocaleChanged);
+    _loadNotificationPreferences();
+  }
+
+  Future<void> _loadNotificationPreferences() async {
+    final prefs = await _notificationService.getNotificationPreferences();
+    setState(() {
+      _notificationsEnabled = prefs['enabled'] as bool;
+      _notificationDays = prefs['days'] as int;
+    });
   }
 
   void _onThemeChanged() {
@@ -60,6 +72,57 @@ class _Setting_menuState extends State<Setting_menu> {
   // Helper method to navigate to a new screen
   void _navigateTo(BuildContext context, Widget screen) {
     Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
+  }
+
+  // Show notification setup dialog
+  Future<void> _showNotificationDialog() async {
+    final TextEditingController daysController = TextEditingController(
+      text: _notificationDays.toString(),
+    );
+
+    final result = await showDialog<int>(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          elevation: 10,
+          backgroundColor: Colors.transparent,
+          child: _NotificationDialogContent(
+            daysController: daysController,
+            initialDays: _notificationDays,
+          ),
+        );
+      },
+    );
+
+    if (result != null) {
+      setState(() {
+        _notificationDays = result;
+        _notificationsEnabled = true;
+      });
+      
+      await _notificationService.saveNotificationPreferences(
+        enabled: true,
+        days: result,
+      );
+      
+      await _notificationService.initialize(context);
+      await _notificationService.checkExpiringItems();
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(TranslationHelper.t(
+              'Notifications enabled successfully!',
+              'اطلاعات کامیابی سے فعال ہوگئیں!',
+            )),
+            backgroundColor: _kButtonColor,
+          ),
+        );
+      }
+    }
   }
 
   // Logout function
@@ -242,21 +305,36 @@ class _Setting_menuState extends State<Setting_menu> {
                         icon: Icons.notifications,
                         trailing: Switch(
                           value: _notificationsEnabled,
-                          onChanged: (bool newValue) {
-                            setState(() {
-                              _notificationsEnabled = newValue;
-                            });
+                          onChanged: (bool newValue) async {
+                            if (newValue) {
+                              await _showNotificationDialog();
+                            } else {
+                              setState(() {
+                                _notificationsEnabled = false;
+                              });
+                              await _notificationService.saveNotificationPreferences(
+                                enabled: false,
+                                days: _notificationDays,
+                              );
+                            }
                           },
                           activeThumbColor: Colors.white,
                           activeTrackColor: _kButtonColor,
                           inactiveThumbColor: Colors.grey[400],
                           inactiveTrackColor: Colors.grey[300],
                         ),
-                        onTap: () {
-                          // Toggle on tap of the whole tile area
-                          setState(() {
-                            _notificationsEnabled = !_notificationsEnabled;
-                          });
+                        onTap: () async {
+                          if (!_notificationsEnabled) {
+                            await _showNotificationDialog();
+                          } else {
+                            setState(() {
+                              _notificationsEnabled = false;
+                            });
+                            await _notificationService.saveNotificationPreferences(
+                              enabled: false,
+                              days: _notificationDays,
+                            );
+                          }
                         },
                       ),
 
@@ -541,6 +619,187 @@ class _LogoutTile extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// --------------------------------------------------------------------------
+// --- WIDGET: Notification Dialog Content ---
+// --------------------------------------------------------------------------
+class _NotificationDialogContent extends StatefulWidget {
+  final TextEditingController daysController;
+  final int initialDays;
+
+  const _NotificationDialogContent({
+    required this.daysController,
+    required this.initialDays,
+  });
+
+  @override
+  _NotificationDialogContentState createState() => _NotificationDialogContentState();
+}
+
+class _NotificationDialogContentState extends State<_NotificationDialogContent> {
+  late int _days;
+
+  @override
+  void initState() {
+    super.initState();
+    _days = widget.initialDays;
+    widget.daysController.text = _days.toString();
+  }
+
+  void _incrementDays() {
+    setState(() {
+      _days++;
+      widget.daysController.text = _days.toString();
+    });
+  }
+
+  void _decrementDays() {
+    if (_days > 1) {
+      setState(() {
+        _days--;
+        widget.daysController.text = _days.toString();
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(30),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Text(
+            TranslationHelper.t(
+              'Notification Settings',
+              'اطلاعات کی ترتیبات',
+            ),
+            style: const TextStyle(
+              fontSize: 24,
+              color: _kButtonColor,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 20),
+          Text(
+            TranslationHelper.t(
+              'How many days before item expiry would you like us to send you a notification?',
+              'آئٹم کی میعاد ختم ہونے سے کتنے دن پہلے آپ کو اطلاع بھیجی جائے؟',
+            ),
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black87,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 30),
+          
+          // Days input with increment/decrement buttons
+          Container(
+            decoration: BoxDecoration(
+              color: _kSubtleGray,
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Decrement button
+                IconButton(
+                  icon: const Icon(Icons.remove, color: _kButtonColor),
+                  onPressed: _decrementDays,
+                  iconSize: 28,
+                ),
+                // Text field
+                SizedBox(
+                  width: 80,
+                  child: TextFormField(
+                    controller: widget.daysController,
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 24,
+                    ),
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    onChanged: (value) {
+                      int? num = int.tryParse(value);
+                      if (num != null && num >= 1) {
+                        setState(() {
+                          _days = num;
+                        });
+                      } else if (num != null && num < 1) {
+                        widget.daysController.text = '1';
+                        setState(() {
+                          _days = 1;
+                        });
+                      }
+                    },
+                  ),
+                ),
+                // Increment button
+                IconButton(
+                  icon: const Icon(Icons.add, color: _kButtonColor),
+                  onPressed: _incrementDays,
+                  iconSize: 28,
+                ),
+              ],
+            ),
+          ),
+          
+          const SizedBox(height: 10),
+          Text(
+            TranslationHelper.t('Days', 'دن'),
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[600],
+            ),
+          ),
+          
+          const SizedBox(height: 30),
+          
+          // Done button
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(_days);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _kButtonColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                elevation: 5,
+              ),
+              child: Text(
+                TranslationHelper.t('Done', 'مکمل'),
+                style: const TextStyle(
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

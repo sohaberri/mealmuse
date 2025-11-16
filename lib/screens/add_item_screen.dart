@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../providers/theme_provider.dart';
 import '../providers/locale_provider.dart';
 import '../utils/translation_helper.dart';
+import '../services/notification_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'navbar.dart';
 
 // The primary color derived from the selected 'Vegetable' pill in the screenshot
@@ -129,6 +131,17 @@ class _AddItemScreenState extends State<AddItemScreen> {
           .doc(user.uid)
           .collection('inventory')
           .add(itemData);
+
+      // TODO: TESTING ONLY - Check notifications for newly added item
+      // This can be removed later if not needed in production
+      final notificationService = NotificationService();
+      final prefs = await SharedPreferences.getInstance();
+      final notificationsEnabled = prefs.getBool('notifications_enabled') ?? false;
+      
+      if (notificationsEnabled) {
+        // Note: forceCheck parameter not needed since daily limit is commented out
+        await notificationService.checkExpiringItems();
+      }
 
       // Dismiss loading indicator
       Navigator.of(context).pop();
