@@ -148,13 +148,19 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
 
   // Loading widget
   Widget _buildLoadingState() {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black87;
+    
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircularProgressIndicator(color: Color(0xFF5C8A94)),
           SizedBox(height: 20),
-          Text('Loading recipe details...'),
+          Text(
+            'Loading recipe details...',
+            style: TextStyle(color: textColor),
+          ),
         ],
       ),
     );
@@ -162,6 +168,10 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
 
   // Error widget
   Widget _buildErrorState() {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black87;
+    final subtitleColor = isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[600];
+    
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -172,13 +182,13 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             SizedBox(height: 20),
             Text(
               'Failed to load recipe details',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor),
             ),
             SizedBox(height: 10),
             Text(
               _errorMessage,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey[600]),
+              style: TextStyle(color: subtitleColor),
             ),
             SizedBox(height: 20),
             ElevatedButton(
@@ -186,7 +196,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF5C8A94),
               ),
-              child: Text('Try Again'),
+              child: Text('Try Again', style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
@@ -205,11 +215,15 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
     final int likes = widget.recipe['likes'] ?? 0;
 
     if (_isLoading) {
+      final isDarkMode = ThemeProvider().darkModeEnabled;
+      final backgroundColor = isDarkMode ? const Color(0xFF121212) : Colors.white;
+      final iconColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+      
       return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: backgroundColor,
         appBar: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.black, size: 28),
+            icon: Icon(Icons.arrow_back, color: iconColor, size: 28),
             onPressed: () => Navigator.of(context).pop(),
           ),
           backgroundColor: Colors.transparent,
@@ -220,11 +234,15 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
     }
 
     if (_hasError) {
+      final isDarkMode = ThemeProvider().darkModeEnabled;
+      final backgroundColor = isDarkMode ? const Color(0xFF121212) : Colors.white;
+      final iconColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+      
       return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: backgroundColor,
         appBar: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.black, size: 28),
+            icon: Icon(Icons.arrow_back, color: iconColor, size: 28),
             onPressed: () => Navigator.of(context).pop(),
           ),
           backgroundColor: Colors.transparent,

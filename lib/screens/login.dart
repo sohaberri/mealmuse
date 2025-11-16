@@ -23,6 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isPasswordVisible = false;
 
   // Reusable text field builder for consistent styling
   Widget _buildTextField({
@@ -36,12 +37,28 @@ class _LoginScreenState extends State<LoginScreen> {
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: TextField(
         controller: controller,
-        obscureText: isPassword,
+        obscureText: isPassword && !_isPasswordVisible,
         style: TextStyle(color: isDarkMode ? const Color(0xFFE1E1E1) : Colors.black87),
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: TextStyle(color: isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[600]),
           prefixIcon: Icon(icon, color: isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[600]),
+          suffixIcon: isPassword
+              ? Padding(
+                  padding: const EdgeInsets.only(right: 5.0),
+                  child: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                      color: isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[600],
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
+                  ),
+                )
+              : null,
           filled: true,
           fillColor: isDarkMode ? const Color(0xFF3A3A3A) : Colors.white,
           border: OutlineInputBorder(

@@ -184,15 +184,22 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
 
         // Update the recipes lists
         _allRecipes = snapshot.data!.docs;
-        // Reapply filter with current search query
-        _filterRecipes();
+        // Reapply filter with current search query (schedule after build)
+        if (_filteredRecipes.isEmpty || _filteredRecipes.length != _allRecipes.length) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _filterRecipes();
+          });
+        }
+
+        // Use _allRecipes directly if no search is active, otherwise use _filteredRecipes
+        final recipesToShow = _searchController.text.isEmpty ? _allRecipes : _filteredRecipes;
 
         return ListView.builder(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          itemCount: _filteredRecipes.length,
+          itemCount: recipesToShow.length,
           itemBuilder: (context, index) {
-            final doc = _filteredRecipes[index];
+            final doc = recipesToShow[index];
             final recipeData = doc.data() as Map<String, dynamic>;
             
             return _buildRecipeCard(recipeData, doc.id);

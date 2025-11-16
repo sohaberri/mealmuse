@@ -24,6 +24,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   // Check if username is unique
   Future<bool> _isUsernameUnique(String username) async {
@@ -124,12 +126,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     required TextEditingController controller,
     VoidCallback? onChanged,
     required bool isDarkMode,
+    bool? isPasswordVisible,
+    VoidCallback? onToggleVisibility,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: TextField(
         controller: controller,
-        obscureText: isPassword,
+        obscureText: isPassword && !(isPasswordVisible ?? false),
         style: TextStyle(color: isDarkMode ? const Color(0xFFE1E1E1) : Colors.black87),
         onChanged: (value) {
           if (onChanged != null) {
@@ -140,6 +144,18 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           hintText: hintText,
           hintStyle: TextStyle(color: isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[600]),
           prefixIcon: Icon(icon, color: isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[600]),
+          suffixIcon: isPassword
+              ? Padding(
+                  padding: const EdgeInsets.only(right: 5.0),
+                  child: IconButton(
+                    icon: Icon(
+                      (isPasswordVisible ?? false) ? Icons.visibility : Icons.visibility_off,
+                      color: isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[600],
+                    ),
+                    onPressed: onToggleVisibility,
+                  ),
+                )
+              : null,
           filled: true,
           fillColor: isDarkMode ? const Color(0xFF3A3A3A) : Colors.white,
           border: OutlineInputBorder(
@@ -519,6 +535,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     controller: _passwordController,
                     onChanged: () => setState(() {}), // Trigger rebuild when password changes
                     isDarkMode: isDarkMode,
+                    isPasswordVisible: _isPasswordVisible,
+                    onToggleVisibility: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
                   ),
                   // Password requirements
                   _buildPasswordRequirements(secondaryTextColor),
@@ -529,6 +551,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     controller: _confirmPasswordController,
                     onChanged: () => setState(() {}), // Trigger rebuild when confirm password changes
                     isDarkMode: isDarkMode,
+                    isPasswordVisible: _isConfirmPasswordVisible,
+                    onToggleVisibility: () {
+                      setState(() {
+                        _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                      });
+                    },
                   ),
                   
                   const SizedBox(height: 40),
