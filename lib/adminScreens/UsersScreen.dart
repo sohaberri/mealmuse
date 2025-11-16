@@ -16,7 +16,7 @@ class _UsersScreenState extends State<UsersScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
-  static const Color primaryContentColor = Color(0xFF5B8181);
+  static const Color primaryContentColor = Color(0xFF5C8A94);
 
   @override
   void dispose() {

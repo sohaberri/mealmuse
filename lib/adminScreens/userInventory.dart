@@ -59,6 +59,7 @@ class _UserInventoryState extends State<UserInventory> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
+        selectedItemColor: const Color(0xFF5C8A94),
         onTap: (index) {
           setState(() {
             _currentIndex = index;
@@ -94,7 +95,7 @@ class _UserInventoryState extends State<UserInventory> {
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF5B8181).withOpacity(0.2),
+                  color: const Color(0xFF5C8A94).withOpacity(0.2),
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -103,7 +104,7 @@ class _UserInventoryState extends State<UserInventory> {
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF5B8181),
+                      color: Color(0xFF5C8A94),
                     ),
                   ),
                 ),
@@ -180,7 +181,7 @@ class _UserInventoryState extends State<UserInventory> {
               child: Container(
                 decoration: BoxDecoration(
                   color: _currentIndex == 0 
-                      ? const Color(0xFF5B8181) 
+                      ? const Color(0xFF5C8A94) 
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(25),
                 ),
@@ -207,7 +208,7 @@ class _UserInventoryState extends State<UserInventory> {
               child: Container(
                 decoration: BoxDecoration(
                   color: _currentIndex == 1 
-                      ? const Color(0xFF5B8181) 
+                      ? const Color(0xFF5C8A94) 
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(25),
                 ),
@@ -265,7 +266,7 @@ class _UserInventoryState extends State<UserInventory> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
             child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF5B8181)),
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF5C8A94)),
             ),
           );
         }
@@ -437,7 +438,7 @@ class _UserInventoryState extends State<UserInventory> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
             child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF5B8181)),
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF5C8A94)),
             ),
           );
         }
