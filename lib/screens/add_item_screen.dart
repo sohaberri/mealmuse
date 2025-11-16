@@ -377,8 +377,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
                       child: TextFormField(
                         controller: _quantityController,
                         keyboardType: TextInputType.number,
+                        textAlign: TextAlign.center,
                         style: TextStyle(color: textColor),
-                        // textAlign removed due to analyzer constraint
                         decoration: InputDecoration(
                           hintText: TranslationHelper.t('Amount', 'رقم'),
                           hintStyle: TextStyle(color: hintColor),
