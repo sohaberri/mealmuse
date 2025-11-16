@@ -163,27 +163,39 @@ class _Setting_menuState extends State<Setting_menu> {
 
       // If user confirms logout
       if (shouldLogout == true) {
-        // Show loading indicator
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          },
-        );
+        try {
+          // Show loading indicator
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            },
+          );
 
-        // Sign out from Firebase
-        await FirebaseAuth.instance.signOut();
+          // Sign out from Firebase
+          await FirebaseAuth.instance.signOut();
 
-        // Navigate to homepage and clear all routes
-        if (mounted) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => HomePage()),
+          // Navigate to homepage and clear all routes (this will also dismiss the dialog)
+          if (!mounted) return;
+          
+          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const HomePage()),
             (route) => false,
           );
+        } catch (e) {
+          // Handle logout error
+          if (mounted) {
+            Navigator.of(context, rootNavigator: true).pop(); // Close loading dialog
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Logout error: $e'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
         }
       }
     } catch (e) {
