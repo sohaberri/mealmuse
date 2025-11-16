@@ -528,11 +528,9 @@ class _PasswordDialogContentState extends State<_PasswordDialogContent> {
   bool _passwordsMatch = false;
 
   Map<String, bool> _validationChecks = {
-    '8 characters minimum': false,
-    '1 uppercase letter': false,
-    '1 lowercase letter': false,
-    '1 number': false,
-    '1 symbol': false,
+    'At least 6 characters': false,
+    'At least one number (0-9)': false,
+    'At least one special character (!@ etc.)': false,
   };
 
   @override
@@ -562,11 +560,9 @@ class _PasswordDialogContentState extends State<_PasswordDialogContent> {
     }
 
     setState(() {
-      _validationChecks['8 characters minimum'] = password.length >= 8;
-      _validationChecks['1 uppercase letter'] = password.contains(RegExp(r'[A-Z]'));
-      _validationChecks['1 lowercase letter'] = password.contains(RegExp(r'[a-z]'));
-      _validationChecks['1 number'] = password.contains(RegExp(r'[0-9]'));
-      _validationChecks['1 symbol'] = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+      _validationChecks['At least 6 characters'] = password.length >= 6;
+      _validationChecks['At least one number (0-9)'] = password.contains(RegExp(r'[0-9]'));
+      _validationChecks['At least one special character (!@ etc.)'] = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
     });
     
     _checkPasswordMatch();
@@ -583,22 +579,30 @@ class _PasswordDialogContentState extends State<_PasswordDialogContent> {
   }
 
   Widget _buildValidationRow(String text, bool isValid) {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final checkIconColor = isDarkMode ? _kButtonColor : _kButtonColor;
+    final uncheckedIconColor = isDarkMode ? const Color(0xFF606060) : Colors.grey[400];
+    final validTextColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black87;
+    final invalidTextColor = isDarkMode ? const Color(0xFF808080) : Colors.grey[600];
+    
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         children: [
           Icon(
             isValid ? Icons.check_circle : Icons.circle_outlined,
-            color: isValid ? _kButtonColor : Colors.grey[400],
+            color: isValid ? checkIconColor : uncheckedIconColor,
             size: 16,
           ),
           const SizedBox(width: 8),
-          Text(
-            text,
-            style: TextStyle(
-              color: isValid ? Colors.black87 : Colors.grey[600],
-              fontSize: 14,
-              fontWeight: isValid ? FontWeight.bold : FontWeight.normal,
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                color: isValid ? validTextColor : invalidTextColor,
+                fontSize: 14,
+                fontWeight: isValid ? FontWeight.bold : FontWeight.normal,
+              ),
             ),
           ),
         ],
@@ -608,10 +612,20 @@ class _PasswordDialogContentState extends State<_PasswordDialogContent> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final dialogBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+    final secondaryTextColor = isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[600];
+    final fieldBg = isDarkMode ? const Color(0xFF3A3A3A) : _kSubtleGray;
+    final hintColor = isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[400];
+    final iconColor = isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey;
+    final checkIconColor = isDarkMode ? _kButtonColor : _kButtonColor;
+    final uncheckedIconColor = isDarkMode ? const Color(0xFF606060) : Colors.grey[400];
+    
     return Container(
       padding: const EdgeInsets.all(30),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: dialogBg,
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
@@ -625,32 +639,33 @@ class _PasswordDialogContentState extends State<_PasswordDialogContent> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Center(
+          Center(
             child: Text(
               "Update Password",
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: textColor,
               ),
             ),
           ),
           const SizedBox(height: 25),
           
           // New Password Input
-          const Text("New Password", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black87)),
+          Text("New Password", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor)),
           const SizedBox(height: 8),
           TextField(
             controller: _newPassController,
             obscureText: _isObscuredNew,
             decoration: InputDecoration(
               hintText: "Enter New Password",
+              hintStyle: TextStyle(color: hintColor),
               filled: true,
-              fillColor: _kSubtleGray,
+              fillColor: fieldBg,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
               contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               suffixIcon: IconButton(
-                icon: Icon(_isObscuredNew ? Icons.visibility_off : Icons.visibility, color: Colors.grey),
+                icon: Icon(_isObscuredNew ? Icons.visibility_off : Icons.visibility, color: iconColor),
                 onPressed: () {
                   setState(() {
                     _isObscuredNew = !_isObscuredNew;
@@ -658,7 +673,7 @@ class _PasswordDialogContentState extends State<_PasswordDialogContent> {
                 },
               ),
             ),
-            style: const TextStyle(fontSize: 18, color: Colors.black87, fontWeight: FontWeight.w600),
+            style: TextStyle(fontSize: 18, color: textColor, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 20),
 
@@ -672,19 +687,20 @@ class _PasswordDialogContentState extends State<_PasswordDialogContent> {
           const SizedBox(height: 20),
 
           // Confirm Password Input
-          const Text("Confirm Password", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black87)),
+          Text("Confirm Password", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor)),
           const SizedBox(height: 8),
           TextField(
             controller: _confirmPassController,
             obscureText: _isObscuredConfirm,
             decoration: InputDecoration(
               hintText: "Confirm New Password",
+              hintStyle: TextStyle(color: hintColor),
               filled: true,
-              fillColor: _kSubtleGray,
+              fillColor: fieldBg,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
               contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               suffixIcon: IconButton(
-                icon: Icon(_isObscuredConfirm ? Icons.visibility_off : Icons.visibility, color: Colors.grey),
+                icon: Icon(_isObscuredConfirm ? Icons.visibility_off : Icons.visibility, color: iconColor),
                 onPressed: () {
                   setState(() {
                     _isObscuredConfirm = !_isObscuredConfirm;
@@ -692,7 +708,7 @@ class _PasswordDialogContentState extends State<_PasswordDialogContent> {
                 },
               ),
             ),
-            style: const TextStyle(fontSize: 18, color: Colors.black87, fontWeight: FontWeight.w600),
+            style: TextStyle(fontSize: 18, color: textColor, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 10),
 
@@ -703,14 +719,14 @@ class _PasswordDialogContentState extends State<_PasswordDialogContent> {
               children: [
                 Icon(
                   _passwordsMatch ? Icons.check_circle : Icons.circle_outlined,
-                  color: _passwordsMatch ? _kButtonColor : Colors.grey[400],
+                  color: _passwordsMatch ? checkIconColor : uncheckedIconColor,
                   size: 16,
                 ),
                 const SizedBox(width: 8),
                 Text(
                   "Passwords match",
                   style: TextStyle(
-                    color: _passwordsMatch ? Colors.black87 : Colors.grey[600],
+                    color: _passwordsMatch ? textColor : secondaryTextColor,
                     fontSize: 14,
                     fontWeight: _passwordsMatch ? FontWeight.bold : FontWeight.normal,
                   ),
@@ -732,7 +748,7 @@ class _PasswordDialogContentState extends State<_PasswordDialogContent> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                     side: const BorderSide(color: _kButtonColor, width: 2),
                   ),
-                  child: const Text("Cancel", style: TextStyle(color: _kButtonColor, fontSize: 18, fontWeight: FontWeight.bold)),
+                  child: Text("Cancel", style: TextStyle(color: _kButtonColor, fontSize: 18, fontWeight: FontWeight.bold)),
                 ),
               ),
               const SizedBox(width: 15),
@@ -751,7 +767,7 @@ class _PasswordDialogContentState extends State<_PasswordDialogContent> {
                     disabledBackgroundColor: Colors.grey[300],
                     disabledForegroundColor: Colors.grey[500],
                   ),
-                  child: const Text("Done", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                  child: Text("Done", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
