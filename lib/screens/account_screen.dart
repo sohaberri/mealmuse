@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../providers/theme_provider.dart';
+import '../providers/locale_provider.dart';
+import '../utils/translation_helper.dart';
 
 // --------------------------------------------------------------------------
 // --- FIREBASE USER DATA CLASS ---
@@ -153,6 +155,17 @@ class ProfileState extends State<ProfileCheck> {
   void initState() {
     super.initState();
     _initializeUserData();
+    LocaleProvider().localeNotifier.addListener(_onLocaleChanged);
+  }
+
+  @override
+  void dispose() {
+    LocaleProvider().localeNotifier.removeListener(_onLocaleChanged);
+    super.dispose();
+  }
+
+  void _onLocaleChanged() {
+    setState(() {});
   }
 
   Future<void> _initializeUserData() async {
@@ -379,6 +392,12 @@ class ProfileState extends State<ProfileCheck> {
     final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
     final subtleGray = isDarkMode ? const Color(0xFF2A2A2A) : _kSubtleGray;
 
+    final accountTitle = TranslationHelper.get('account');
+    final nameLabel = TranslationHelper.t('Name', 'نام');
+    final emailLabel = TranslationHelper.t('Email', 'ای میل');
+    final passwordLabel = TranslationHelper.t('Password', 'پاس ورڈ');
+    final saveChangesLabel = TranslationHelper.t('Save Changes', 'تبدیلیاں محفوظ کریں');
+
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -398,7 +417,7 @@ class ProfileState extends State<ProfileCheck> {
                       child: Icon(Icons.arrow_back_ios_new, color: textColor, size: 28),
                     ),
                     Text(
-                      "Account",
+                      accountTitle,
                       style: TextStyle(
                         color: textColor,
                         fontSize: 32,
@@ -419,7 +438,7 @@ class ProfileState extends State<ProfileCheck> {
                     children: [
                       // Name Field
                       _SleekInputField(
-                        label: "Name",
+                        label: nameLabel,
                         value: _userData.userName,
                         isEditable: true,
                         onEditTap: _showEditNameDialog,
@@ -428,7 +447,7 @@ class ProfileState extends State<ProfileCheck> {
 
                       // Email Field
                       _SleekInputField(
-                        label: "Email",
+                        label: emailLabel,
                         value: _userData.userEmail,
                         isEditable: false, 
                       ),
@@ -436,7 +455,7 @@ class ProfileState extends State<ProfileCheck> {
 
                       // Password Field
                       _SleekInputField(
-                        label: "Password",
+                        label: passwordLabel,
                         value: _userData.userPasswordDisplay,
                         isEditable: true,
                         isObscured: true,
@@ -457,9 +476,9 @@ class ProfileState extends State<ProfileCheck> {
                             elevation: 8,
                             shadowColor: _kButtonColor.withOpacity(0.4),
                           ),
-                          child: const Text(
-                            "Save Changes",
-                            style: TextStyle(
+                          child: Text(
+                            saveChangesLabel,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 20,
                               fontWeight: FontWeight.bold,

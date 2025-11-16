@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../providers/theme_provider.dart';
+import '../providers/locale_provider.dart';
+import '../utils/translation_helper.dart';
 import 'add_item_screen.dart';
 
 // --- Data Models ---
@@ -115,6 +117,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
     super.initState();
     _themeProvider = ThemeProvider();
     _themeProvider.addListener(_onThemeChanged);
+    LocaleProvider().localeNotifier.addListener(_onLocaleChanged);
     _inventoryStream = _getCategoryItems();
     _categoryColor = _getCategoryColor(widget.category);
   }
@@ -123,9 +126,14 @@ class _InventoryScreenState extends State<InventoryScreen> {
     setState(() {});
   }
 
+  void _onLocaleChanged() {
+    setState(() {});
+  }
+
   @override
   void dispose() {
     _themeProvider.removeListener(_onThemeChanged);
+    LocaleProvider().localeNotifier.removeListener(_onLocaleChanged);
     super.dispose();
   }
 
@@ -163,6 +171,31 @@ class _InventoryScreenState extends State<InventoryScreen> {
     }
   }
 
+  String _translateCategory(String category) {
+    switch (category.toLowerCase()) {
+      case 'fruit':
+        return 'پھل';
+      case 'vegetable':
+        return 'سبزی';
+      case 'protein':
+        return 'پروٹین';
+      case 'dairy':
+        return 'ڈیری';
+      case 'grain':
+        return 'اناج';
+      case 'beverage':
+        return 'مشروب';
+      case 'snack':
+        return 'اسنیکس';
+      case 'spices':
+        return 'مصالحے';
+      case 'other':
+        return 'دیگر';
+      default:
+        return category;
+    }
+  }
+
   // Delete item function
   Future<void> _deleteItem(InventoryItem item) async {
     final user = _auth.currentUser;
@@ -180,7 +213,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${item.name} deleted successfully'),
+            content: Text('${item.name} ${TranslationHelper.t('deleted successfully', 'کامیابی سے حذف ہو گیا')}'),
             backgroundColor: Colors.green,
           ),
         );
@@ -189,7 +222,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error deleting ${item.name}: $e'),
+            content: Text('${TranslationHelper.t('Error deleting', 'حذف کرتے وقت خرابی')} ${item.name}: $e'),
             backgroundColor: Color.fromARGB(255, 144, 11, 9),
           ),
         );
@@ -203,21 +236,21 @@ class _InventoryScreenState extends State<InventoryScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Delete Item'),
-          content: Text('Are you sure you want to delete ${item.name}?'),
+          title: Text(TranslationHelper.t('Delete Item', 'آئٹم حذف کریں')),
+          content: Text(TranslationHelper.t('Are you sure you want to delete ${item.name}?', 'کیا آپ یقینی ہیں کہ آپ ${item.name} کو حذف کرنا چاہتے ہیں؟')),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: Text(TranslationHelper.t('Cancel', 'منسوخ')),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 _deleteItem(item);
               },
-              child: const Text(
-                'Delete',
-                style: TextStyle(color: Color.fromARGB(255, 144, 11, 9)),
+              child: Text(
+                TranslationHelper.t('Delete', 'حذف'),
+                style: const TextStyle(color: Color.fromARGB(255, 144, 11, 9)),
               ),
             ),
           ],
@@ -269,23 +302,23 @@ class _InventoryScreenState extends State<InventoryScreen> {
         }
       },
       itemBuilder: (BuildContext context) => [
-        const PopupMenuItem<String>(
+        PopupMenuItem<String>(
           value: 'edit',
           child: Row(
             children: [
-              Icon(Icons.edit, color: Colors.blue),
-              SizedBox(width: 8),
-              Text('Edit'),
+              const Icon(Icons.edit, color: Colors.blue),
+              const SizedBox(width: 8),
+              Text(TranslationHelper.t('Edit', 'ترمیم')),
             ],
           ),
         ),
-        const PopupMenuItem<String>(
+        PopupMenuItem<String>(
           value: 'delete',
           child: Row(
             children: [
-              Icon(Icons.delete, color: Color.fromARGB(255, 144, 11, 9)),
-              SizedBox(width: 8),
-              Text('Delete'),
+              const Icon(Icons.delete, color: Color.fromARGB(255, 144, 11, 9)),
+              const SizedBox(width: 8),
+              Text(TranslationHelper.t('Delete', 'حذف')),
             ],
           ),
         ),
@@ -364,7 +397,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     Row(
                       children: [
                         Text(
-                          'Quantity: ${item.quantity} ${item.unit}',
+                          TranslationHelper.t('Quantity', 'مقدار') + ': ${item.quantity} ${item.unit}',
                           style: TextStyle(fontSize: 14, color: subtitleColor),
                         ),
                       ],
@@ -413,7 +446,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    widget.category,
+                    TranslationHelper.t(widget.category, _translateCategory(widget.category)),
                     style: TextStyle(
                       fontSize: 32.0,
                       fontWeight: FontWeight.bold,
@@ -451,7 +484,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                             const SizedBox(width: 10),
                             Expanded(
                               child: Text(
-                                'Search in ${widget.category}',
+                                TranslationHelper.t('Search in ${widget.category}', 'میں تلاش کریں ${_translateCategory(widget.category)}'),
                                 style: TextStyle(color: isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[600], fontSize: 16.0),
                               ),
                             ),
@@ -504,16 +537,16 @@ class _InventoryScreenState extends State<InventoryScreen> {
                             children: [
                               const Icon(Icons.inventory_2, size: 64, color: Colors.white54),
                               const SizedBox(height: 16),
-                              const Text(
-                                'No items found',
-                                style: TextStyle(
+                              Text(
+                                TranslationHelper.t('No items found', 'کوئی آئٹمز نہیں ملے'),
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
                                 ),
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Add some ${widget.category.toLowerCase()} to your inventory',
+                                TranslationHelper.t('Add some ${widget.category.toLowerCase()} to your inventory', 'اپنی انوینٹری میں کچھ ${_translateCategory(widget.category).toLowerCase()} شامل کریں'),
                                 style: const TextStyle(
                                   color: Colors.white54,
                                   fontSize: 14,
@@ -527,7 +560,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                   backgroundColor: Colors.white,
                                   foregroundColor: _categoryColor,
                                 ),
-                                child: const Text('Add Item'),
+                                child: Text(TranslationHelper.t('Add Item', 'آئٹم شامل کریں')),
                               ),
                             ],
                           ),
@@ -1101,6 +1134,31 @@ class _CategorySearchScreenState extends State<CategorySearchScreen> {
   List<QueryDocumentSnapshot> _searchResults = [];
   bool _isSearching = false;
 
+  String _translateCategory(String category) {
+    switch (category.toLowerCase()) {
+      case 'fruit':
+        return 'پھل';
+      case 'vegetable':
+        return 'سبزی';
+      case 'protein':
+        return 'پروٹین';
+      case 'dairy':
+        return 'ڈیری';
+      case 'grain':
+        return 'اناج';
+      case 'beverage':
+        return 'مشروب';
+      case 'snack':
+        return 'اسنیکس';
+      case 'spices':
+        return 'مصالحے';
+      case 'other':
+        return 'دیگر';
+      default:
+        return category;
+    }
+  }
+
   void _performCategorySearch(String query) async {
     if (query.isEmpty) {
       setState(() {
@@ -1221,7 +1279,7 @@ class _CategorySearchScreenState extends State<CategorySearchScreen> {
           autofocus: true,
           style: TextStyle(color: textColor),
           decoration: InputDecoration(
-            hintText: 'Search in ${widget.category}...',
+            hintText: TranslationHelper.t('Search in ${widget.category}...', 'میں تلاش کریں ${_translateCategory(widget.category)}...'),
             border: InputBorder.none,
             hintStyle: TextStyle(color: isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[600]),
           ),
@@ -1247,7 +1305,7 @@ class _CategorySearchScreenState extends State<CategorySearchScreen> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                'Search for items in ${widget.category}',
+                TranslationHelper.t('Search for items in ${widget.category}', 'میں آئٹمز کے لیے تلاش کریں ${_translateCategory(widget.category)}'),
                 style: TextStyle(color: isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey, fontSize: 16),
                 textAlign: TextAlign.center,
               ),
@@ -1264,7 +1322,7 @@ class _CategorySearchScreenState extends State<CategorySearchScreen> {
             child: _searchResults.isEmpty && _searchController.text.isNotEmpty && !_isSearching
                 ? Center(
                     child: Text(
-                      'No items found in this category',
+                      TranslationHelper.t('No items found in this category', 'اس کیٹیگری میں کوئی آئٹمز نہیں ملے'),
                       style: TextStyle(color: isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey, fontSize: 16),
                     ),
                   )

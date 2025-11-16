@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../providers/theme_provider.dart';
+import '../providers/locale_provider.dart';
+import '../utils/translation_helper.dart';
 import 'inventory_categories.dart';
 import 'dishes.dart';
 
@@ -19,9 +21,14 @@ class InventoryItem {
 }
 
 // --- Main Inventory Categories Screen Widget ---
-class InventoryCategoriesScreen extends StatelessWidget {
+class InventoryCategoriesScreen extends StatefulWidget {
   const InventoryCategoriesScreen({super.key});
 
+  @override
+  State<InventoryCategoriesScreen> createState() => _InventoryCategoriesScreenState();
+}
+
+class _InventoryCategoriesScreenState extends State<InventoryCategoriesScreen> {
   // Data for the main category buttons
   final List<InventoryItem> categories = const [
     InventoryItem(name: 'Vegetables', icon: Icons.grass_outlined, category: 'Vegetable'),
@@ -35,6 +42,47 @@ class InventoryCategoriesScreen extends StatelessWidget {
     InventoryItem(name: 'Other', icon: Icons.more_horiz, category: 'Other'),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    LocaleProvider().localeNotifier.addListener(_onLocaleChanged);
+  }
+
+  @override
+  void dispose() {
+    LocaleProvider().localeNotifier.removeListener(_onLocaleChanged);
+    super.dispose();
+  }
+
+  void _onLocaleChanged() {
+    setState(() {});
+  }
+
+  String _translateCategoryName(String name) {
+    switch (name.toLowerCase()) {
+      case 'vegetables':
+        return TranslationHelper.t('Vegetables', 'سبزی');
+      case 'fruits':
+        return TranslationHelper.t('Fruits', 'پھل');
+      case 'protein':
+        return TranslationHelper.t('Protein', 'پروٹین');
+      case 'dairy':
+        return TranslationHelper.t('Dairy', 'ڈیری');
+      case 'grains':
+        return TranslationHelper.t('Grains', 'اناج');
+      case 'beverages':
+        return TranslationHelper.t('Beverages', 'مشروب');
+      case 'snacks':
+        return TranslationHelper.t('Snacks', 'اسنیکس');
+      case 'spices':
+        return TranslationHelper.t('Spices', 'مصالحے');
+      case 'other':
+        return TranslationHelper.t('Other', 'دیگر');
+      default:
+        return name;
+    }
+  }
+
   // Helper function for navigating to the InventoryScreen with category
   void _navigateToInventoryScreen(BuildContext context, String category) {
     Navigator.push(
@@ -46,6 +94,7 @@ class InventoryCategoriesScreen extends StatelessWidget {
   }
 
   // Widget for a single, stylish category button
+
   Widget _buildCategoryButton(BuildContext context, InventoryItem category) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -65,7 +114,7 @@ class InventoryCategoriesScreen extends StatelessWidget {
             Icon(category.icon, size: 24.0),
             const SizedBox(width: 15),
             Text(
-              category.name,
+              _translateCategoryName(category.name),
               style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
             ),
             const Spacer(),
@@ -151,7 +200,7 @@ class InventoryCategoriesScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    'Inventory',
+                    TranslationHelper.t('Inventory', 'انوینٹری'),
                     style: TextStyle(
                       fontSize: 32.0,
                       fontWeight: FontWeight.bold,
@@ -186,7 +235,7 @@ class InventoryCategoriesScreen extends StatelessWidget {
                       Icon(Icons.search, color: searchTextColor, size: 24.0),
                       const SizedBox(width: 10),
                       Text(
-                        'Search All Items',
+                        TranslationHelper.t('Search All Items', 'تمام آئٹمز تلاش کریں'),
                         style: TextStyle(color: searchTextColor, fontSize: 16.0),
                       ),
                     ],
@@ -221,9 +270,9 @@ class InventoryCategoriesScreen extends StatelessWidget {
                     elevation: 8,
                     shadowColor: const Color(0xFFb8cf6b).withOpacity(0.5),
                   ),
-                  child: const Text(
-                    'Find Recipes →',
-                    style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                  child: Text(
+                    TranslationHelper.t('Find Recipes →', 'ریسیپیز تلاش کریں →'),
+                    style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -387,7 +436,18 @@ class _SearchInventoryScreenState extends State<SearchInventoryScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    LocaleProvider().localeNotifier.removeListener(_onLocaleChanged);
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    LocaleProvider().localeNotifier.addListener(_onLocaleChanged);
+  }
+
+  void _onLocaleChanged() {
+    setState(() {});
   }
 
   @override
@@ -410,7 +470,7 @@ class _SearchInventoryScreenState extends State<SearchInventoryScreen> {
           controller: _searchController,
           autofocus: true,
           decoration: InputDecoration(
-            hintText: 'Search inventory items...',
+            hintText: TranslationHelper.t('Search inventory items...', 'انوینٹری کی آئٹمز تلاش کریں...'),
             border: InputBorder.none,
             hintStyle: TextStyle(color: hintColor),
           ),
@@ -441,7 +501,7 @@ class _SearchInventoryScreenState extends State<SearchInventoryScreen> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                'Type to search your inventory items',
+                TranslationHelper.t('Type to search your inventory items', 'اپنی انوینٹری کی آئٹمز تلاش کرنے کے لیے ٹائپ کریں'),
                 style: TextStyle(color: hintColor, fontSize: 16),
               ),
             ),
@@ -458,7 +518,7 @@ class _SearchInventoryScreenState extends State<SearchInventoryScreen> {
             child: _searchResults.isEmpty && _searchController.text.isNotEmpty && !_isSearching
                 ? Center(
                     child: Text(
-                      'No items found',
+                      TranslationHelper.t('No items found', 'کوئی آئٹمز نہیں ملے'),
                       style: TextStyle(color: hintColor, fontSize: 16),
                     ),
                   )

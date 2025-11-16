@@ -3,6 +3,8 @@ import 'recipe.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../providers/theme_provider.dart';
+import '../providers/locale_provider.dart';
+import '../utils/translation_helper.dart';
 
 // --- MAIN APP ENTRY POINT ---
 void main() {
@@ -103,7 +105,7 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
     if (recipeId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Recipe ID not found'),
+          content: Text(TranslationHelper.t('Recipe ID not found', 'ریسیپی آئی ڈی نہیں ملی')),
           backgroundColor: Colors.red,
           duration: Duration(seconds: 2),
         ),
@@ -141,7 +143,7 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
           controller: _searchController,
           style: TextStyle(color: textColor),
           decoration: InputDecoration(
-            hintText: 'Search Recipe',
+            hintText: TranslationHelper.t('Search Recipe', 'ریسیپی تلاش کریں'),
             hintStyle: TextStyle(color: hintColor),
             prefixIcon: Icon(Icons.search, color: hintColor),
             border: InputBorder.none,
@@ -258,7 +260,7 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
                 children: [
                   Icon(Icons.visibility, color: Colors.blue),
                   SizedBox(width: 8),
-                  Text('View Recipe'),
+                  Text(TranslationHelper.t('View Recipe', 'ریسیپی دیکھیں')),
                 ],
               ),
             ),
@@ -268,7 +270,7 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
                 children: [
                   Icon(Icons.delete, color: Colors.red),
                   SizedBox(width: 8),
-                  Text('Remove'),
+                  Text(TranslationHelper.t('Remove', 'ہٹائیں')),
                 ],
               ),
             ),
@@ -298,7 +300,7 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
           CircularProgressIndicator(color: primaryColor),
           SizedBox(height: 16),
           Text(
-            'Loading your saved recipes...',
+            TranslationHelper.t('Loading your saved recipes...', 'آپ کی محفوظ شدہ ریسیپیز لوڈ کی جا رہی ہیں...'),
             style: TextStyle(color: Colors.grey[600]),
           ),
         ],
@@ -325,7 +327,7 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No Saved Recipes',
+            TranslationHelper.t('No Saved Recipes', 'کوئی محفوظ ریسیپیز نہیں'),
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: textColor,
@@ -333,7 +335,7 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Save recipes to see them here!',
+            TranslationHelper.t('Save recipes to see them here!', 'ریسیپیز محفوظ کریں تاکہ وہ یہاں دکھیں!'),
             style: TextStyle(color: subtitleColor, fontSize: 16),
             textAlign: TextAlign.center,
           ),
@@ -356,7 +358,7 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
           Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
           SizedBox(height: 16),
           Text(
-            'Failed to load recipes',
+            TranslationHelper.t('Failed to load recipes', 'ریسیپیز لوڈ کرنے میں ناکامی'),
             style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
           ),
           SizedBox(height: 8),
@@ -374,7 +376,7 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
               setState(() {});
             },
             style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
-            child: Text('Retry'),
+            child: Text(TranslationHelper.t('Retry', 'دوبارہ کوشش کریں')),
           ),
         ],
       ),
@@ -395,7 +397,7 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Recipe removed from saved recipes'),
+          content: Text(TranslationHelper.t('Recipe removed from saved recipes', 'ریسیپی محفوظ شدہ فہرست سے ہٹا دی گئی')),
           backgroundColor: Colors.green,
           duration: Duration(seconds: 2),
         ),
@@ -403,7 +405,7 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to remove recipe: $e'),
+          content: Text("${TranslationHelper.t('Failed to remove recipe', 'ریسیپیز ہٹانے میں ناکامی')}: $e"),
           backgroundColor: Colors.red,
           duration: Duration(seconds: 2),
         ),
@@ -460,7 +462,7 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
                               padding: const EdgeInsets.only(right: 48.0),
                               child: Center(
                                 child: Text(
-                                  'Saved Recipes',
+                                  TranslationHelper.t('Saved Recipes', 'محفوظ ریسیپیز'),
                                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                         fontWeight: FontWeight.bold,
                                         color: headerText,

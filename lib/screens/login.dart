@@ -3,6 +3,8 @@ import 'register.dart';
 import 'home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../providers/theme_provider.dart';
+import '../providers/locale_provider.dart';
+import '../utils/translation_helper.dart';
 import '../adminScreens/AdminHome.dart'; // Make sure to import the AdminApp screen
 
 class LoginScreen extends StatefulWidget {
@@ -94,13 +96,13 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.of(context).pop();
 
       // Handle errors
-      String errorMessage = 'An error occurred';
+      String errorMessage = TranslationHelper.t('An error occurred', 'ایک خرابی پیش آگئی');
       if (e.code == 'user-not-found') {
-        errorMessage = 'No user found for that email.';
+        errorMessage = TranslationHelper.t('No user found for that email.', 'اس ای میل کے لیے کوئی صارف نہیں ملا۔');
       } else if (e.code == 'wrong-password') {
-        errorMessage = 'Wrong password provided.';
+        errorMessage = TranslationHelper.t('Wrong password provided.', 'غلط پاس ورڈ درج کیا گیا۔');
       } else if (e.code == 'invalid-email') {
-        errorMessage = 'Invalid email address.';
+        errorMessage = TranslationHelper.t('Invalid email address.', 'غلط ای میل ایڈریس۔');
       }
 
       // Show error dialog
@@ -108,14 +110,14 @@ class _LoginScreenState extends State<LoginScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Login Failed'),
+            title: Text(TranslationHelper.t('Login Failed', 'لاگ اِن ناکام ہوا')),
             content: Text(errorMessage),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('OK'),
+                child: Text(TranslationHelper.t('OK', 'ٹھیک ہے')),
               ),
             ],
           );
@@ -130,14 +132,14 @@ class _LoginScreenState extends State<LoginScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Error'),
-            content: Text('An unexpected error occurred: $e'),
+            title: Text(TranslationHelper.t('Error', 'خرابی')),
+            content: Text("${TranslationHelper.t('An unexpected error occurred', 'غیر متوقع خرابی پیش آگئی')}: $e"),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('OK'),
+                child: Text(TranslationHelper.t('OK', 'ٹھیک ہے')),
               ),
             ],
           );
@@ -153,18 +155,18 @@ class _LoginScreenState extends State<LoginScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Reset Password'),
+          title: Text(TranslationHelper.t('Reset Password', 'پاس ورڈ ری سیٹ کریں')),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Enter your email address and we\'ll send you a password reset link.'),
+              Text(TranslationHelper.t("Enter your email address and we'll send you a password reset link.", 'اپنا ای میل پتہ درج کریں، ہم آپ کو پاس ورڈ ری سیٹ لنک بھیجیں گے۔')),
               const SizedBox(height: 20),
               TextField(
                 controller: emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  hintText: 'Enter your email',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: TranslationHelper.t('Email', 'ای میل'),
+                  hintText: TranslationHelper.t('Enter your email', 'اپنا ای میل درج کریں'),
+                  border: const OutlineInputBorder(),
                 ),
               ),
             ],
@@ -174,13 +176,13 @@ class _LoginScreenState extends State<LoginScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Cancel'),
+              child: Text(TranslationHelper.t('Cancel', 'منسوخ کریں')),
             ),
             ElevatedButton(
               onPressed: () async {
                 if (emailController.text.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please enter your email address')),
+                    SnackBar(content: Text(TranslationHelper.t('Please enter your email address', 'براہ کرم اپنا ای میل پتہ درج کریں'))),
                   );
                   return;
                 }
@@ -190,7 +192,7 @@ class _LoginScreenState extends State<LoginScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: _cardColor,
               ),
-              child: const Text('Send Link', style: TextStyle(color: Colors.white)),
+              child: Text(TranslationHelper.t('Send Link', 'لنک بھیجیں'), style: const TextStyle(color: Colors.white)),
             ),
           ],
         );
@@ -222,14 +224,14 @@ class _LoginScreenState extends State<LoginScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Email Sent'),
-            content: Text('Password reset link has been sent to $email. Please check your inbox.'),
+            title: Text(TranslationHelper.t('Email Sent', 'ای میل بھیج دی گئی')),
+            content: Text("${TranslationHelper.t('Password reset link has been sent to', 'پاس ورڈ ری سیٹ لنک اس ای میل پر بھیج دیا گیا ہے')}: $email. ${TranslationHelper.t('Please check your inbox.', 'براہ کرم اپنے ان باکس کو چیک کریں۔')}") ,
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('OK'),
+                child: Text(TranslationHelper.t('OK', 'ٹھیک ہے')),
               ),
             ],
           );
@@ -240,13 +242,13 @@ class _LoginScreenState extends State<LoginScreen> {
       // Dismiss loading
       Navigator.of(context).pop();
       
-      String errorMessage = 'Failed to send reset email. Please try again.';
+      String errorMessage = TranslationHelper.t('Failed to send reset email. Please try again.', 'ری سیٹ ای میل بھیجنے میں ناکامی۔ براہ کرم دوبارہ کوشش کریں۔');
       if (e.code == 'user-not-found') {
-        errorMessage = 'No account found with this email address.';
+        errorMessage = TranslationHelper.t('No account found with this email address.', 'اس ای میل پتے کے ساتھ کوئی اکاؤنٹ نہیں ملا۔');
       } else if (e.code == 'invalid-email') {
-        errorMessage = 'Please enter a valid email address.';
+        errorMessage = TranslationHelper.t('Please enter a valid email address.', 'براہ کرم درست ای میل پتہ درج کریں۔');
       } else if (e.code == 'too-many-requests') {
-        errorMessage = 'Too many attempts. Please try again later.';
+        errorMessage = TranslationHelper.t('Too many attempts. Please try again later.', 'بہت زیادہ کوششیں۔ براہ کرم بعد میں دوبارہ کوشش کریں۔');
       }
       
       // Show error
@@ -262,7 +264,7 @@ class _LoginScreenState extends State<LoginScreen> {
       
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('An error occurred: $e'),
+          content: Text("${TranslationHelper.t('An error occurred', 'ایک خرابی پیش آگئی')}: $e"),
           backgroundColor: Colors.red,
         ),
       );
@@ -275,7 +277,10 @@ class _LoginScreenState extends State<LoginScreen> {
     
     return Scaffold(
       backgroundColor: _darkBackground,
-      body: SingleChildScrollView(
+      body: ValueListenableBuilder<Locale?>(
+        valueListenable: LocaleProvider().localeNotifier,
+        builder: (context, locale, _) {
+          return SingleChildScrollView(
         child: Column(
           children: [
             // --- Top Section: Form Card ---
@@ -299,12 +304,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   // Text Fields
                   _buildTextField(
-                    hintText: 'Email', 
+                    hintText: TranslationHelper.t('Email', 'ای میل'), 
                     icon: Icons.mail_outline,
                     controller: _emailController,
                   ),
                   _buildTextField(
-                    hintText: 'Password', 
+                    hintText: TranslationHelper.t('Password', 'پاس ورڈ'), 
                     icon: Icons.lock_outline, 
                     isPassword: true,
                     controller: _passwordController,
@@ -317,9 +322,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () {
                         _showForgotPasswordDialog(context);
                       },
-                      child: const Text(
-                        'Forgot Password?',
-                        style: TextStyle(
+                      child: Text(
+                        TranslationHelper.t('Forgot Password?', 'پاس ورڈ بھول گئے؟'),
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 14,
                         ),
@@ -351,7 +356,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    'Lets Start\nCooking!',
+                    TranslationHelper.t('Lets Start\nCooking!', 'چلیں\nپکانا شروع کریں!'),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: _primaryText,
@@ -397,11 +402,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(30.0),
                         ),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Login',
+                            TranslationHelper.t('Login', 'لاگ اِن'),
                             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           SizedBox(width: 8),
@@ -421,12 +426,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       ));
                     },
                     child: RichText(
-                      text: const TextSpan(
-                        text: 'Dont have an account? ',
+                      text: TextSpan(
+                        text: TranslationHelper.t('Dont have an account? ', 'اکاؤنٹ نہیں ہے؟ '),
                         style: TextStyle(color: Colors.black54, fontSize: 16),
                         children: <TextSpan>[
                           TextSpan(
-                            text: 'Sign up',
+                            text: TranslationHelper.t('Sign up', 'سائن اپ'),
                             style: TextStyle(
                               color: _primaryText,
                               fontWeight: FontWeight.bold,
@@ -442,6 +447,8 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ],
         ),
+      );
+        },
       ),
     );
   }

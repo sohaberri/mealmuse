@@ -32,6 +32,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'screens/homepage.dart';
 import 'firebase_service.dart';
 import 'providers/theme_provider.dart';
+import 'providers/locale_provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 // import 'screens/expiring.dart';
 
 Future<void> main() async {
@@ -43,6 +45,8 @@ Future<void> main() async {
   
   // Initialize ThemeProvider (load saved preference from SharedPreferences)
   await ThemeProvider().initialize();
+  // Initialize LocaleProvider (load saved locale)
+  await LocaleProvider().initialize();
   
   // Load environment variables
   try {
@@ -79,17 +83,31 @@ Future<void> main() async {
   print('   - Environment: ${envLoaded ? "✅" : "❌"}');
   print('   - Firebase: ${firebaseInitialized ? "✅" : "❌"}');
   
-  runApp(const FigmaLoginLab());
+  runApp(const MyApp());
 }
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
-class FigmaLoginLab extends StatelessWidget {
-  const FigmaLoginLab({super.key});
-  
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: HomePage(),
+    // Use ValueListenableBuilder so the MaterialApp rebuilds when locale changes
+    return ValueListenableBuilder<Locale?>(
+      valueListenable: LocaleProvider().localeNotifier,
+      builder: (context, locale, _) {
+        final isDark = ThemeProvider().darkModeEnabled;
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: const HomePage(),
+          locale: locale,
+          supportedLocales: const [Locale('en'), Locale('ur')],
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          theme: isDark ? ThemeData.dark() : ThemeData.light(),
+        );
+      },
     );
   }
 }

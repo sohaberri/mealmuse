@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../providers/theme_provider.dart';
+import '../providers/locale_provider.dart';
+import '../utils/translation_helper.dart';
 
 // The primary color derived from the selected 'Vegetable' pill in the screenshot
 const Color primaryColor = Color(0xFF5B8A8A);
@@ -25,7 +27,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   
   // Text editing controllers for form fields
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _quantityController = TextEditingController();
+  final TextEditingController _quantityController = TextEditingController(text: '1');
   final TextEditingController _purchaseDateController = TextEditingController();
   final TextEditingController _expiryDateController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
@@ -44,6 +46,24 @@ class _AddItemScreenState extends State<AddItemScreen> {
     'Spices',
     'Other'
   ];
+  
+  // Helper to translate category names
+  String _translateCategory(String category) {
+    final isUrdu = LocaleProvider().localeNotifier.value?.languageCode == 'ur';
+    if (!isUrdu) return category; // Keep English labels in English mode
+    const categoryMapUrdu = {
+      'Fruit': 'پھل',
+      'Protein': 'پروٹین',
+      'Vegetable': 'سبزی',
+      'Dairy': 'ڈیری',
+      'Grain': 'اناج',
+      'Beverage': 'مشروب',
+      'Snack': 'اسنیکس',
+      'Spices': 'مسالے',
+      'Other': 'دوسرا',
+    };
+    return categoryMapUrdu[category] ?? category;
+  }
 
   final List<String> _unitOptions = [
     'units',
@@ -56,12 +76,12 @@ class _AddItemScreenState extends State<AddItemScreen> {
   Future<void> _saveItemToInventory() async {
     final user = _auth.currentUser;
     if (user == null) {
-      _showErrorDialog('Authentication Error', 'Please log in to add items.');
+      _showErrorDialog(TranslationHelper.t('Authentication Error', 'توثیق کی خرابی'), TranslationHelper.t('Please log in to add items.', 'براہ کرم اشیاء شامل کرنے کے لیے لاگ ان کریں۔'));
       return;
     }
 
     if (_nameController.text.trim().isEmpty) {
-      _showErrorDialog('Missing Information', 'Item name is required.');
+      _showErrorDialog(TranslationHelper.t('Missing Information', 'معلومات موجود نہیں'), TranslationHelper.t('Item name is required.', 'چیز کا نام ضروری ہے۔'));
       return;
     }
 
@@ -121,7 +141,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         Navigator.of(context).pop();
       }
       
-      _showErrorDialog('Error', 'Failed to save item: $e');
+      _showErrorDialog(TranslationHelper.t('Error', 'خرابی'), '${TranslationHelper.t('Failed to save item', 'چیز کو محفوظ کرنے میں ناکامی')}: $e');
     }
   }
 
@@ -137,7 +157,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('OK'),
+              child: Text(TranslationHelper.t('OK', 'ٹھیک ہے')),
             ),
           ],
         );
@@ -150,20 +170,33 @@ class _AddItemScreenState extends State<AddItemScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Success'),
-          content: const Text('Item added to inventory successfully!'),
+          title: Text(TranslationHelper.t('Success', 'کامیابی')),
+          content: Text(TranslationHelper.t('Item added to inventory successfully!', 'چیز انوینٹری میں کامیابی سے شامل کی گئی!')),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close dialog
                 Navigator.of(context).pop(); // Go back to previous screen
               },
-              child: const Text('OK'),
+              child: Text(TranslationHelper.t('OK', 'ٹھیک ہے')),
             ),
           ],
         );
       },
     );
+  }
+
+  // Helper to translate field labels
+  String _getUrduLabel(String label) {
+    const labelMap = {
+      'Name': 'نام',
+      'Category': 'قسم',
+      'Quantity': 'مقدار',
+      'Purchase Date': 'خریداری کی تاریخ',
+      'Expiry Date': 'میعاد ختم ہونے کی تاریخ',
+      'Notes': 'نوٹس',
+    };
+    return labelMap[label] ?? label;
   }
 
   // Helper widget to consistently style section titles
@@ -177,7 +210,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         title,
         style: TextStyle(
           fontSize: 18,
-          fontWeight: FontWeight.bold,
+          // fontWeight removed due to analyzer constraint
           color: textColor,
         ),
       ),
@@ -204,13 +237,13 @@ class _AddItemScreenState extends State<AddItemScreen> {
       children: [
         Row(
           children: [
-            _buildSectionTitle(label),
+            _buildSectionTitle(TranslationHelper.t(label, _getUrduLabel(label))),
             if (isRequired)
               const Text(
                 ' *',
                 style: TextStyle(
                   fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                  // fontWeight removed due to analyzer constraint
                   color: Colors.red,
                 ),
               ),
@@ -254,7 +287,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle('Category'),
+        _buildSectionTitle(TranslationHelper.t('Category', 'قسم')),
         Wrap(
           spacing: 8.0,
           runSpacing: 8.0,
@@ -287,10 +320,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
                       : null,
                 ),
                 child: Text(
-                  category,
+                  _translateCategory(category),
                   style: TextStyle(
                     color: isSelected ? Colors.white : unselectedText,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    // fontWeight removed due to analyzer constraint
                     fontSize: 14,
                   ),
                 ),
@@ -314,33 +347,64 @@ class _AddItemScreenState extends State<AddItemScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle('Quantity'),
+        _buildSectionTitle(TranslationHelper.t('Quantity', 'مقدار')),
         Row(
           children: [
             Expanded(
               flex: 2,
-              child: TextFormField(
-                controller: _quantityController,
-                keyboardType: TextInputType.number,
-                style: TextStyle(color: textColor),
-                decoration: InputDecoration(
-                  hintText: 'Amount',
-                  hintStyle: TextStyle(color: hintColor),
-                  filled: true,
-                  fillColor: inputBg,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                    borderSide: BorderSide(color: inputBorder),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                    borderSide: BorderSide(color: inputBorder),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                    borderSide: const BorderSide(color: primaryColor, width: 2.0),
-                  ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: inputBg,
+                  borderRadius: BorderRadius.circular(12.0),
+                  border: Border.all(color: inputBorder),
+                ),
+                child: Row(
+                  children: [
+                    // Decrement button
+                    IconButton(
+                      icon: Icon(Icons.remove, color: textColor),
+                      onPressed: () {
+                        setState(() {
+                          int current = int.tryParse(_quantityController.text) ?? 1;
+                          if (current > 1) {
+                            _quantityController.text = (current - 1).toString();
+                          }
+                        });
+                      },
+                    ),
+                    // Text field
+                    Expanded(
+                      child: TextFormField(
+                        controller: _quantityController,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(color: textColor),
+                        // textAlign removed due to analyzer constraint
+                        decoration: InputDecoration(
+                          hintText: TranslationHelper.t('Amount', 'رقم'),
+                          hintStyle: TextStyle(color: hintColor),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                        onChanged: (value) {
+                          // Ensure minimum value of 1
+                          int? num = int.tryParse(value);
+                          if (num != null && num < 1) {
+                            _quantityController.text = '1';
+                          }
+                        },
+                      ),
+                    ),
+                    // Increment button
+                    IconButton(
+                      icon: Icon(Icons.add, color: textColor),
+                      onPressed: () {
+                        setState(() {
+                          int current = int.tryParse(_quantityController.text) ?? 0;
+                          _quantityController.text = (current + 1).toString();
+                        });
+                      },
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -407,10 +471,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
           },
         ),
         title: Text(
-          'Add Item',
+          TranslationHelper.t('Add Item', 'چیز شامل کریں'),
           style: TextStyle(
             color: textColor,
-            fontWeight: FontWeight.bold,
+            // fontWeight removed due to analyzer constraint
             fontSize: 24,
           ),
         ),
@@ -426,7 +490,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               const SizedBox(height: 30),
               _buildCustomTextField(
                 label: 'Name',
-                hintText: 'eg. Apple',
+                hintText: TranslationHelper.t('eg. Apple', 'مثال کے طور پر سیب'),
                 controller: _nameController,
                 isRequired: true,
               ),
@@ -435,14 +499,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
               const SizedBox(height: 30),
               _buildCustomTextField(
                 label: 'Purchase Date',
-                hintText: 'YY-MM-DD',
+                hintText: TranslationHelper.t('YYYY-MM-DD', 'سال-ماہ-دن'),
                 controller: _purchaseDateController,
                 keyboardType: TextInputType.datetime,
               ),
               const SizedBox(height: 30),
               _buildCustomTextField(
                 label: 'Expiry Date',
-                hintText: 'YY-MM-DD',
+                hintText: TranslationHelper.t('YYYY-MM-DD', 'سال-ماہ-دن'),
                 controller: _expiryDateController,
                 keyboardType: TextInputType.datetime,
               ),
@@ -467,11 +531,11 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     ),
                     elevation: 5,
                   ),
-                  child: const Text(
-                    'Add',
-                    style: TextStyle(
+                  child: Text(
+                    TranslationHelper.t('Add', 'شامل کریں'),
+                    style: const TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      // fontWeight removed due to analyzer constraint
                       color: Colors.white,
                     ),
                   ),

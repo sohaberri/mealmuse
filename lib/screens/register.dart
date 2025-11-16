@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../providers/theme_provider.dart';
+// Removed unused theme provider import
+import '../providers/locale_provider.dart';
+import '../utils/translation_helper.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -86,13 +88,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   // Password validation function
   String? _validatePassword(String password) {
     if (password.length < 6) {
-      return 'Password must be at least 6 characters long';
+      return TranslationHelper.t('Password must be at least 6 characters long', 'پاس ورڈ کم از کم 6 حروف طویل ہونا چاہیے');
     }
     if (!RegExp(r'[0-9]').hasMatch(password)) {
-      return 'Password must contain at least one number';
+      return TranslationHelper.t('Password must contain at least one number', 'پاس ورڈ میں کم از کم ایک عدد ہونا چاہیے');
     }
     if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password)) {
-      return 'Password must contain at least one special character';
+      return TranslationHelper.t('Password must contain at least one special character', 'پاس ورڈ میں کم از کم ایک خاص حرف ہونا چاہیے');
     }
     return null;
   }
@@ -100,16 +102,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   // Username validation function
   String? _validateUsername(String username) {
     if (username.isEmpty) {
-      return 'Username is required';
+      return TranslationHelper.t('Username is required', 'صارف نام ضروری ہے');
     }
     if (username.length < 3) {
-      return 'Username must be at least 3 characters long';
+      return TranslationHelper.t('Username must be at least 3 characters long', 'صارف نام کم از کم 3 حروف پر مشتمل ہونا چاہیے');
     }
     if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(username)) {
-      return 'Username can only contain letters, numbers, and underscores';
+      return TranslationHelper.t('Username can only contain letters, numbers, and underscores', 'صارف نام میں صرف حروف، اعداد، اور انڈر اسکور شامل ہو سکتے ہیں');
     }
     if (username.length > 20) {
-      return 'Username cannot exceed 20 characters';
+      return TranslationHelper.t('Username cannot exceed 20 characters', 'صارف نام 20 حروف سے زیادہ نہیں ہو سکتا');
     }
     return null;
   }
@@ -155,34 +157,57 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         _usernameController.text.isEmpty || 
         _passwordController.text.isEmpty || 
         _confirmPasswordController.text.isEmpty) {
-      _showErrorDialog(context, 'Missing Information', 'Please fill in all fields.');
+      _showErrorDialog(
+        context,
+        TranslationHelper.t('Missing Information', 'معلومات غائب ہیں'),
+        TranslationHelper.t('Please fill in all fields.', 'براہ کرم تمام خانے پُر کریں۔'),
+      );
       return;
     }
 
     // Validate email format
     if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(_emailController.text.trim())) {
-      _showErrorDialog(context, 'Invalid Email', 'Please enter a valid email address.');
+      _showErrorDialog(
+        context,
+        TranslationHelper.t('Invalid Email', 'غلط ای میل'),
+        TranslationHelper.t('Please enter a valid email address.', 'براہ کرم درست ای میل پتہ درج کریں۔'),
+      );
       return;
     }
 
     // Validate username format
     final usernameError = _validateUsername(_usernameController.text.trim());
     if (usernameError != null) {
-      _showErrorDialog(context, 'Invalid Username', usernameError);
+      _showErrorDialog(
+        context,
+        TranslationHelper.t('Invalid Username', 'غلط صارف نام'),
+        usernameError,
+      );
       return;
     }
 
     // Validate passwords match
     if (_passwordController.text != _confirmPasswordController.text) {
-      _showErrorDialog(context, 'Password Mismatch', 'Passwords do not match. Please try again.');
+      _showErrorDialog(
+        context,
+        TranslationHelper.t('Password Mismatch', 'پاس ورڈ میں عدم مطابقت'),
+        TranslationHelper.t('Passwords do not match. Please try again.', 'پاس ورڈ مماثل نہیں۔ براہ کرم دوبارہ کوشش کریں۔'),
+      );
       return;
     }
 
     // Validate password strength
     final passwordError = _validatePassword(_passwordController.text);
     if (passwordError != null) {
-      _showErrorDialog(context, 'Weak Password', 
-          '$passwordError.\n\nPassword requirements:\n• At least 6 characters\n• At least one number (0-9)\n• At least one special character (!@#\$%^&* etc.)');
+      final reqHeader = TranslationHelper.t('Password requirements:', 'پاس ورڈ کے تقاضے:');
+      final req1 = TranslationHelper.t('At least 6 characters', 'کم از کم 6 حروف');
+      final req2 = TranslationHelper.t('At least one number (0-9)', 'کم از کم ایک عدد (0-9)');
+      final req3 = TranslationHelper.t('At least one special character (!@#%^&* etc.)', 'کم از کم ایک خاص حرف (!@#%^&* وغیرہ)');
+      _showErrorDialog(
+        context,
+        TranslationHelper.t('Weak Password', 'کمزور پاس ورڈ'),
+        '$passwordError.\n\n$reqHeader\n• $req1\n• $req2\n• $req3',
+      );
       return;
     }
 
@@ -202,7 +227,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       final isUnique = await _isUsernameUnique(_usernameController.text.trim());
       if (!isUnique) {
         Navigator.of(context).pop(); // Dismiss loading
-        _showErrorDialog(context, 'Username Taken', 'This username is already taken. Please choose a different one.');
+        _showErrorDialog(
+          context,
+          TranslationHelper.t('Username Taken', 'صارف نام پہلے سے موجود ہے'),
+          TranslationHelper.t('This username is already taken. Please choose a different one.', 'یہ صارف نام پہلے سے لیا جا چکا ہے۔ براہ کرم کوئی دوسرا منتخب کریں۔'),
+        );
         return;
       }
 
@@ -240,18 +269,22 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       }
 
       // Handle errors
-      String errorMessage = 'An error occurred during registration';
+      String errorMessage = TranslationHelper.t('An error occurred during registration', 'رجسٹریشن کے دوران خرابی پیش آگئی');
       if (e.code == 'weak-password') {
-        errorMessage = 'The password provided is too weak.';
+        errorMessage = TranslationHelper.t('The password provided is too weak.', 'مہیا کردہ پاس ورڈ بہت کمزور ہے۔');
       } else if (e.code == 'email-already-in-use') {
-        errorMessage = 'An account already exists for that email.';
+        errorMessage = TranslationHelper.t('An account already exists for that email.', 'اس ای میل کے لیے اکاؤنٹ پہلے سے موجود ہے۔');
       } else if (e.code == 'invalid-email') {
-        errorMessage = 'The email address is not valid.';
+        errorMessage = TranslationHelper.t('The email address is not valid.', 'ای میل پتہ درست نہیں ہے۔');
       } else if (e.code == 'operation-not-allowed') {
-        errorMessage = 'Email/password accounts are not enabled.';
+        errorMessage = TranslationHelper.t('Email/password accounts are not enabled.', 'ای میل/پاس ورڈ اکاؤنٹس فعال نہیں ہیں۔');
       }
 
-      _showErrorDialog(context, 'Registration Failed', errorMessage);
+      _showErrorDialog(
+        context,
+        TranslationHelper.t('Registration Failed', 'رجسٹریشن ناکام ہوگئی'),
+        errorMessage,
+      );
     } catch (e) {
       // Dismiss loading indicator
       if (Navigator.of(context).canPop()) {
@@ -259,7 +292,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       }
       
       // Show generic error
-      _showErrorDialog(context, 'Error', 'An unexpected error occurred: $e');
+      _showErrorDialog(
+        context,
+        TranslationHelper.t('Error', 'خرابی'),
+        '${TranslationHelper.t('An unexpected error occurred', 'غیر متوقع خرابی پیش آگئی')}: $e',
+      );
     }
   }
 
@@ -275,7 +312,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('OK'),
+              child: Text(TranslationHelper.t('OK', 'ٹھیک ہے')),
             ),
           ],
         );
@@ -288,8 +325,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Registration Successful'),
-          content: const Text('Your account has been created successfully!'),
+          title: Text(TranslationHelper.t('Registration Successful', 'رجسٹریشن کامیاب')), 
+          content: Text(TranslationHelper.t('Your account has been created successfully!', 'آپ کا اکاؤنٹ کامیابی سے بنا دیا گیا ہے!')),
           actions: [
             TextButton(
               onPressed: () {
@@ -299,7 +336,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   builder: (context) => const LoginScreen(),
                 ));
               },
-              child: const Text('OK'),
+              child: Text(TranslationHelper.t('OK', 'ٹھیک ہے')),
             ),
           ],
         );
@@ -317,16 +354,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Password must contain:',
+            TranslationHelper.t('Password must contain:', 'پاس ورڈ میں شامل ہونا چاہیے:'),
             style: TextStyle(
               color: _primaryText.withOpacity(0.8),
               fontSize: 12,
             ),
           ),
           const SizedBox(height: 4),
-          _buildRequirementLine('At least 6 characters', password.length >= 6),
-          _buildRequirementLine('At least one number', RegExp(r'[0-9]').hasMatch(password)),
-          _buildRequirementLine('At least one special character', 
+          _buildRequirementLine(TranslationHelper.t('At least 6 characters', 'کم از کم 6 حروف'), password.length >= 6),
+          _buildRequirementLine(TranslationHelper.t('At least one number', 'کم از کم ایک عدد'), RegExp(r'[0-9]').hasMatch(password)),
+          _buildRequirementLine(TranslationHelper.t('At least one special character', 'کم از کم ایک خاص حرف'), 
               RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password)),
         ],
       ),
@@ -384,7 +421,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     
     return Scaffold(
       backgroundColor: _primaryText,
-      body: SingleChildScrollView(
+      body: ValueListenableBuilder<Locale?>(
+        valueListenable: LocaleProvider().localeNotifier,
+        builder: (context, locale, _) {
+          return SingleChildScrollView(
         child: Column(
           children: [
             // --- Top Section: Logo and Title ---
@@ -412,11 +452,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Lets Create\nYour Account!',
+                    TranslationHelper.t('Lets Create\nYour Account!', 'چلیں\nآپ کا اکاؤنٹ بنائیں!'),
                     style: TextStyle(
                       color: _black,
                       fontSize: size.width * 0.09,
-                      fontWeight: FontWeight.bold,
                       height: 1.2,
                     ),
                   ),
@@ -444,12 +483,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 children: [
                   // Text Fields
                   _buildTextField(
-                    hintText: 'Email', 
+                    hintText: TranslationHelper.t('Email', 'ای میل'), 
                     icon: Icons.mail_outline,
                     controller: _emailController,
                   ),
                   _buildTextField(
-                    hintText: 'Username', 
+                    hintText: TranslationHelper.t('Username', 'صارف نام'), 
                     icon: Icons.person_outline,
                     controller: _usernameController,
                     onChanged: () => setState(() {}), // Trigger rebuild when username changes
@@ -457,7 +496,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   // Username requirements
                   // _buildUsernameRequirements(),
                   _buildTextField(
-                    hintText: 'Password', 
+                    hintText: TranslationHelper.t('Password', 'پاس ورڈ'), 
                     icon: Icons.lock_outline, 
                     isPassword: true,
                     controller: _passwordController,
@@ -466,7 +505,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   // Password requirements
                   _buildPasswordRequirements(),
                   _buildTextField(
-                    hintText: 'Retype Password', 
+                    hintText: TranslationHelper.t('Retype Password', 'پاس ورڈ دوبارہ لکھیں'), 
                     icon: Icons.lock_outline, 
                     isPassword: true,
                     controller: _confirmPasswordController,
@@ -490,9 +529,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           borderRadius: BorderRadius.circular(30.0),
                         ),
                       ),
-                      child: const Text(
-                        'Register',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      child: Text(
+                        TranslationHelper.t('Register', 'رجسٹر کریں'),
+                        style: TextStyle(fontSize: 18),
                       ),
                     ),
                   ),
@@ -508,15 +547,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     },
                     child: RichText(
                       text: TextSpan(
-                        text: 'Already have an account? ',
+                        text: TranslationHelper.t('Already have an account? ', 'پہلے سے اکاؤنٹ موجود ہے؟ '),
                         style: TextStyle(color: _primaryText.withOpacity(0.8), fontSize: 16),
-                        children: const <TextSpan>[
+                        children: <TextSpan>[
                           TextSpan(
-                            text: 'Sign In',
+                            text: TranslationHelper.t('Sign In', 'سائن اِن'),
                             style: TextStyle(
                               color: _primaryText,
-                              fontWeight: FontWeight.bold,
-                              decoration: TextDecoration.underline,
                             ),
                           ),
                         ],
@@ -528,6 +565,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             ),
           ],
         ),
+      );
+        },
       ),
     );
   }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../providers/theme_provider.dart';
+import '../providers/locale_provider.dart';
+import '../utils/translation_helper.dart';
 import 'navbar.dart';
 
 // --- Data Model for a single expiring item ---
@@ -50,7 +52,7 @@ class _ExpiringItemsScreenState extends State<ExpiringItemsScreen> {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         setState(() {
-          _errorMessage = "User not logged in";
+          _errorMessage = TranslationHelper.t('User not logged in', 'صارف لاگ ان نہیں ہے');
           _isLoading = false;
         });
         return;
@@ -84,19 +86,19 @@ class _ExpiringItemsScreenState extends State<ExpiringItemsScreen> {
           String expiryText;
 
           if (daysUntilExpiry < 0) {
-            expiryText = 'Expired';
+            expiryText = TranslationHelper.t('Expired', 'ختم شدہ');
           } else if (daysUntilExpiry == 0) {
-            expiryText = 'Today';
+            expiryText = TranslationHelper.t('Today', 'آج');
           } else if (daysUntilExpiry == 1) {
-            expiryText = '1 Day';
+            expiryText = TranslationHelper.t('1 Day', '1 دن');
           } else if (daysUntilExpiry < 7) {
-            expiryText = '$daysUntilExpiry Days';
+            expiryText = '$daysUntilExpiry ${TranslationHelper.t('Days', 'دن')}';
           } else if (daysUntilExpiry < 30) {
             final weeks = (daysUntilExpiry / 7).ceil();
-            expiryText = weeks == 1 ? '1 Week' : '$weeks Weeks';
+            expiryText = weeks == 1 ? TranslationHelper.t('1 Week', '1 ہفتہ') : '$weeks ${TranslationHelper.t('Weeks', 'ہفتے')}';
           } else {
             final months = (daysUntilExpiry / 30).ceil();
-            expiryText = months == 1 ? '1 Month' : '$months Months';
+            expiryText = months == 1 ? TranslationHelper.t('1 Month', '1 ماہ') : '$months ${TranslationHelper.t('Months', 'مہینے')}';
           }
 
           // Get appropriate icon based on category
@@ -108,7 +110,7 @@ class _ExpiringItemsScreenState extends State<ExpiringItemsScreen> {
           final quantity = int.tryParse(quantityStr) ?? 0;
 
           items.add(ExpiringItem(
-            name: data['name'] as String? ?? 'Unknown Item',
+            name: data['name'] as String? ?? TranslationHelper.t('Unknown Item', 'نامعلوم آئٹم'),
             count: quantity,
             expiry: expiryText,
             icon: icon,
@@ -128,8 +130,8 @@ class _ExpiringItemsScreenState extends State<ExpiringItemsScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      setState(() {
-        _errorMessage = "Error loading expiring items: $e";
+        setState(() {
+        _errorMessage = "${TranslationHelper.t('Error loading expiring items', 'ختم ہونے والی اشیاء لوڈ کرنے میں خرابی')}: $e";
         _isLoading = false;
       });
     }
@@ -193,12 +195,12 @@ class _ExpiringItemsScreenState extends State<ExpiringItemsScreen> {
                   Row(
                     children: [
                       Text(
-                        'Count: ${item.count}',
+                        '${TranslationHelper.t('Count', 'تعداد')}: ${item.count}',
                         style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       ),
                       const SizedBox(width: 10),
                       Text(
-                        'Expires In: ${item.expiry}',
+                        '${TranslationHelper.t('Expires In', 'میعاد باقی')}: ${item.expiry}',
                         style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       ),
                     ],
@@ -242,20 +244,20 @@ class _ExpiringItemsScreenState extends State<ExpiringItemsScreen> {
               color: _primaryRed,
               size: 64,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               _errorMessage!,
-              style: const TextStyle(fontSize: 16, color: Colors.grey),
+              style: TextStyle(fontSize: 16, color: Colors.grey),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadExpiringItems,
               style: ElevatedButton.styleFrom(
                 backgroundColor: _primaryRed,
                 foregroundColor: _primaryWhite,
               ),
-              child: const Text('Retry'),
+              child: Text(TranslationHelper.t('Retry', 'دوبارہ کوشش کریں')),
             ),
           ],
         ),
@@ -272,14 +274,14 @@ class _ExpiringItemsScreenState extends State<ExpiringItemsScreen> {
               color: _primaryRed,
               size: 64,
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'No expiring items found',
+            SizedBox(height: 16),
+            Text(
+              TranslationHelper.t('No expiring items found', 'کوئی ختم ہونے والی اشیاء نہیں ملیں'),
               style: TextStyle(fontSize: 18, color: Colors.grey),
             ),
-            const SizedBox(height: 8),
-            const Text(
-              'Add expiry dates to your inventory items to see them here',
+            SizedBox(height: 8),
+            Text(
+              TranslationHelper.t('Add expiry dates to your inventory items to see them here', 'اپنی انوینٹری آئٹمز میں میعاد ختم ہونے کی تاریخیں شامل کریں تاکہ یہاں دکھائی دیں'),
               style: TextStyle(fontSize: 14, color: Colors.grey),
               textAlign: TextAlign.center,
             ),
@@ -326,17 +328,23 @@ class _ExpiringItemsScreenState extends State<ExpiringItemsScreen> {
                   bottomRight: Radius.circular(30.0),
                 ),
               ),
-              child: const FlexibleSpaceBar(
-                centerTitle: false,
-                titlePadding: EdgeInsets.only(left: 60, bottom: 16),
-                title: Text(
-                  'Expiring Soon',
-                  style: TextStyle(
-                    color: _primaryWhite,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                  ),
-                ),
+              child: ValueListenableBuilder<Locale?>(
+                valueListenable: LocaleProvider().localeNotifier,
+                builder: (context, locale, _) {
+                  final isUrdu = locale?.languageCode == 'ur';
+                  return FlexibleSpaceBar(
+                    centerTitle: isUrdu,
+                    titlePadding: isUrdu ? const EdgeInsets.only(bottom: 16) : const EdgeInsets.only(left: 60, bottom: 16),
+                    title: Text(
+                      TranslationHelper.t('Expiring Soon', 'جلد ختم ہونے والی اشیاء'),
+                      style: TextStyle(
+                        color: _primaryWhite,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
             leading: IconButton(

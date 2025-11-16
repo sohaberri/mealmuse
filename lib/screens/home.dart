@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../providers/theme_provider.dart';
+import '../providers/locale_provider.dart';
+import '../utils/translation_helper.dart';
 import 'account_screen.dart';
 import 'navbar.dart'; 
 import 'inventory_screen.dart';
@@ -144,10 +146,35 @@ class UserDataStream extends StatelessWidget {
 }
 
 // --- ACTUAL HOME SCREEN CONTENT (The body of the Home tab) ---
-class HomeScreenContent extends StatelessWidget {
+class HomeScreenContent extends StatefulWidget {
   const HomeScreenContent({super.key});
 
+  @override
+  State<HomeScreenContent> createState() => _HomeScreenContentState();
+}
+
+class _HomeScreenContentState extends State<HomeScreenContent> {
+  @override
+  void initState() {
+    super.initState();
+    LocaleProvider().localeNotifier.addListener(_onLocaleChanged);
+  }
+
+  @override
+  void dispose() {
+    LocaleProvider().localeNotifier.removeListener(_onLocaleChanged);
+    super.dispose();
+  }
+
+  void _onLocaleChanged() {
+    // Rebuild when locale changes (e.g., returning from Settings)
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   Widget _buildAddItemButton(BuildContext context) {
+    final addNewItemLabel = TranslationHelper.t('Add New Item', 'نیا آئٹم شامل کریں');
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
       child: ElevatedButton.icon(
@@ -158,9 +185,9 @@ class HomeScreenContent extends StatelessWidget {
           );
         },
         icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text(
-          'Add New Item',
-          style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
+        label: Text(
+          addNewItemLabel,
+          style: const TextStyle(fontSize: 18, color: Colors.white),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.addButton,
@@ -176,6 +203,11 @@ class HomeScreenContent extends StatelessWidget {
   }
 
   Widget _buildGridButtons(BuildContext context) {
+    final findRecipesLabel = TranslationHelper.t('Find Recipes', 'ریسیپیز تلاش کریں');
+    final openInventoryLabel = TranslationHelper.t('Open Inventory', 'انوینٹری کھولیں');
+    final savedRecipesLabel = TranslationHelper.t('Saved Recipes', 'محفوظ ریسیپیز');
+    final settingsLabel = TranslationHelper.get('settings');
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: GridView.count(
@@ -187,25 +219,25 @@ class HomeScreenContent extends StatelessWidget {
         childAspectRatio: 1.05,
         children: [
           GridButton(
-            title: 'Find Recipes',
+            title: findRecipesLabel,
             icon: Icons.ramen_dining_rounded,
             color: AppColors.findRecipes,
             screen: RecipeApp(), // Navigates to FindRecipesScreen
           ),
           GridButton(
-            title: 'Open Inventory',
+            title: openInventoryLabel,
             icon: Icons.shopping_cart_outlined,
             color: AppColors.openInventory,
             screen: InventoryCategoriesScreen(), // Navigates to InventoryScreen
           ),
           GridButton(
-            title: 'Saved Recipes',
+            title: savedRecipesLabel,
             icon: Icons.bookmark_border_rounded,
             color: AppColors.savedRecipes,
             screen: const SavedRecipesScreen(), // Navigates to SavedRecipesScreen
           ),
           GridButton(
-            title: 'Settings',
+            title: settingsLabel,
             icon: Icons.settings_outlined,
             color: AppColors.settings,
             screen: Setting_menu(), // Navigates to SettingsScreen
@@ -219,6 +251,7 @@ class HomeScreenContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final headerHeight = screenHeight * 0.25;
+    final welcomeBackLabel = TranslationHelper.t('Welcome back', 'خوش آمدید');
 
     return SingleChildScrollView(
       child: Column(
@@ -242,18 +275,20 @@ class HomeScreenContent extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         UserDataStream(
-                          builder: (displayName) => Text(
-                            'Hi $displayName!',
-                            style: const TextStyle(
-                              color: AppColors.headerText,
-                              fontSize: 32,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
+                          builder: (displayName) {
+                            final hiLabel = TranslationHelper.t('Hi', 'ہیلو');
+                            return Text(
+                              '$hiLabel $displayName!',
+                              style: const TextStyle(
+                                color: AppColors.headerText,
+                                fontSize: 32,
+                              ),
+                            );
+                          },
                         ),
-                        const Text(
-                          'Welcome back',
-                          style: TextStyle(
+                        Text(
+                          welcomeBackLabel,
+                          style: const TextStyle(
                             color: AppColors.headerText,
                             fontSize: 18,
                           ),
@@ -305,15 +340,21 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     super.initState();
     _themeProvider = ThemeProvider();
     _themeProvider.addListener(_onThemeChanged);
+    LocaleProvider().localeNotifier.addListener(_onLocaleChanged);
   }
 
   @override
   void dispose() {
     _themeProvider.removeListener(_onThemeChanged);
+    LocaleProvider().localeNotifier.removeListener(_onLocaleChanged);
     super.dispose();
   }
 
   void _onThemeChanged() {
+    setState(() {});
+  }
+
+  void _onLocaleChanged() {
     setState(() {});
   }
 

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../providers/theme_provider.dart';
+import '../providers/locale_provider.dart';
+import '../utils/translation_helper.dart';
 import 'dishes.dart';
 import 'inventory_screen.dart';
 import 'expiring.dart';
@@ -39,6 +41,7 @@ class _Setting_menuState extends State<Setting_menu> {
     super.initState();
     _darkModeEnabled = _themeProvider.darkModeEnabled;
     _themeProvider.addListener(_onThemeChanged);
+    LocaleProvider().localeNotifier.addListener(_onLocaleChanged);
   }
 
   void _onThemeChanged() {
@@ -47,9 +50,14 @@ class _Setting_menuState extends State<Setting_menu> {
     });
   }
 
+  void _onLocaleChanged() {
+    setState(() {});
+  }
+
   @override
   void dispose() {
     _themeProvider.removeListener(_onThemeChanged);
+    LocaleProvider().localeNotifier.removeListener(_onLocaleChanged);
     super.dispose();
   }
 
@@ -66,19 +74,19 @@ class _Setting_menuState extends State<Setting_menu> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Logout'),
-            content: const Text('Are you sure you want to logout?'),
+            title: Text(TranslationHelper.t('Logout', 'لاگ آؤٹ')),
+            content: Text(TranslationHelper.t('Are you sure you want to logout?', 'کیا آپ واقعی لاگ آؤٹ کرنا چاہتے ہیں؟')),
             actions: <Widget>[
               TextButton(
-                child: const Text('Cancel'),
+                child: Text(TranslationHelper.t('Cancel', 'منسوخ کریں')),
                 onPressed: () {
                   Navigator.of(context).pop(false);
                 },
               ),
               TextButton(
-                child: const Text(
-                  'Logout',
-                  style: TextStyle(color: _kLogoutRed),
+                child: Text(
+                  TranslationHelper.t('Logout', 'لاگ آؤٹ'),
+                  style: const TextStyle(color: _kLogoutRed),
                 ),
                 onPressed: () {
                   Navigator.of(context).pop(true);
@@ -136,6 +144,14 @@ class _Setting_menuState extends State<Setting_menu> {
     final subtleTextColor = isDarkMode ? const Color(0xFFB0B0B0) : Colors.black54;
     final dividerColor = isDarkMode ? const Color(0xFF3A3A3A) : _kSearchBorderColor;
     
+    final settingsTitle = TranslationHelper.get('settings');
+    final preferencesLabel = TranslationHelper.t('Preferences', 'ترجیحات');
+    final languageLabel = TranslationHelper.t('Language', 'زبان');
+    final darkModeLabel = TranslationHelper.get('darkMode');
+    final notificationsLabel = TranslationHelper.t('Notifications', 'اطلاعات');
+    final accountLabel = TranslationHelper.t('Account', 'اکاؤنٹ');
+    final logoutLabel = TranslationHelper.t('Logout', 'لاگ آؤٹ');
+    
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -156,7 +172,7 @@ class _Setting_menuState extends State<Setting_menu> {
                       child: Icon(Icons.arrow_back_ios_new, color: textColor, size: 28),
                     ),
                     Text(
-                      "Settings",
+                      settingsTitle,
                       style: TextStyle(
                         color: textColor,
                         fontSize: 32,
@@ -186,7 +202,7 @@ class _Setting_menuState extends State<Setting_menu> {
                       Padding(
                         padding: const EdgeInsets.only(left: 10, bottom: 10),
                         child: Text(
-                          "Preferences",
+                          preferencesLabel,
                           style: TextStyle(
                             color: subtleTextColor,
                             fontSize: 16,
@@ -197,14 +213,14 @@ class _Setting_menuState extends State<Setting_menu> {
 
                       // Language Tile
                       _SettingsTile(
-                        label: "Language",
+                        label: languageLabel,
                         icon: Icons.language,
                         onTap: () => _navigateTo(context, const Lang()),
                       ),
                       
                       // Dark Mode Tile with Switch
                       _SettingsTile(
-                        label: "Dark Mode",
+                        label: darkModeLabel,
                         icon: Icons.dark_mode,
                         trailing: Switch(
                           value: _darkModeEnabled,
@@ -223,7 +239,7 @@ class _Setting_menuState extends State<Setting_menu> {
 
                       // Notifications Tile with Switch
                       _SettingsTile(
-                        label: "Notifications",
+                        label: notificationsLabel,
                         icon: Icons.notifications,
                         trailing: Switch(
                           value: _notificationsEnabled,
@@ -253,7 +269,7 @@ class _Setting_menuState extends State<Setting_menu> {
                       Padding(
                         padding: const EdgeInsets.only(left: 10, bottom: 10),
                         child: Text(
-                          "Account",
+                          accountLabel,
                           style: TextStyle(
                             color: subtleTextColor,
                             fontSize: 16,
@@ -264,6 +280,7 @@ class _Setting_menuState extends State<Setting_menu> {
 
                       // Logout Tile - Added with red color
                       _LogoutTile(
+                        label: logoutLabel,
                         onTap: () => _logout(context),
                       ),
                     ],
@@ -478,9 +495,10 @@ class _SettingsTile extends StatelessWidget {
 // --- WIDGET: Logout Tile with Red Styling ---
 // --------------------------------------------------------------------------
 class _LogoutTile extends StatelessWidget {
+  final String label;
   final VoidCallback onTap;
 
-  const _LogoutTile({required this.onTap});
+  const _LogoutTile({required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -514,7 +532,7 @@ class _LogoutTile extends StatelessWidget {
             Icon(Icons.logout, color: _kLogoutRed, size: 28),
             const SizedBox(width: 20),
             Text(
-              "Logout",
+              label,
               style: TextStyle(
                 color: _kLogoutRed,
                 fontSize: 18,

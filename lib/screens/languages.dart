@@ -1,6 +1,8 @@
 // lang.dart
 import 'package:flutter/material.dart';
 import '../providers/theme_provider.dart';
+import '../providers/locale_provider.dart';
+import '../utils/translation_helper.dart';
 import 'dishes.dart';
 import 'inventory_screen.dart';
 import 'expiring.dart';
@@ -23,13 +25,31 @@ class Lang extends StatefulWidget {
 	}
 
 class LangState extends State<Lang> {
-  @override
+	@override
+	void initState() {
+		super.initState();
+		// Listen to locale changes and rebuild screen
+		LocaleProvider().localeNotifier.addListener(_onLocaleChanged);
+	}
+
+	@override
+	void dispose() {
+		LocaleProvider().localeNotifier.removeListener(_onLocaleChanged);
+		super.dispose();
+	}
+
+	void _onLocaleChanged() {
+		setState(() {});
+	}
+
+	@override
 	Widget build(BuildContext context) {
 		final isDarkMode = ThemeProvider().darkModeEnabled;
 		final backgroundColor = isDarkMode ? const Color(0xFF121212) : _kScreenBackgroundColor;
 		final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
 		final dividerColor = isDarkMode ? const Color(0xFF3A3A3A) : _kSearchBorderColor;
-		
+		final langTitle = TranslationHelper.get('language');
+
 		return Scaffold(
 			body: SafeArea(
 				child: Container(
@@ -50,18 +70,18 @@ class LangState extends State<Lang> {
 											child: Icon(Icons.arrow_back_ios_new, color: textColor, size: 28),
 										),
 										Text(
-											"Language",
-											style: TextStyle(
-												color: textColor,
-												fontSize: 32,
-												fontWeight: FontWeight.w900,
-											),
+										langTitle,
+										style: TextStyle(
+											color: textColor,
+											fontSize: 32,
+											fontWeight: FontWeight.w900,
+										),
 										),
 										const SizedBox(width: 34), // Spacer
-									]
+									],
 								),
 							),
-                            Divider(color: dividerColor, thickness: 1.5, height: 0),
+							Divider(color: dividerColor, thickness: 1.5, height: 0),
 							
 							Expanded(
 								child: SingleChildScrollView(
@@ -69,31 +89,49 @@ class LangState extends State<Lang> {
 									child: Column(
 										crossAxisAlignment: CrossAxisAlignment.start,
 										children: [
-											// Only English is available and selected (as requested)
-											_LanguageSelectionTile(
-												language: "English",
-												isSelected: true,
-												onTap: () {
-													debugPrint('English is already selected and cannot be deselected.');
+											// Language selection is wired to LocaleProvider; use ValueListenableBuilder to reflect changes instantly
+											ValueListenableBuilder<Locale?>(
+												valueListenable: LocaleProvider().localeNotifier,
+												builder: (context, locale, _) {
+												final langCode = locale?.languageCode ?? 'en';
+												final englishLabel = TranslationHelper.get('english');
+												final urduLabel = TranslationHelper.get('urdu');
+												return Column(
+													children: [
+														_LanguageSelectionTile(
+															language: englishLabel,
+															isSelected: langCode == 'en',
+															onTap: () async {
+															await LocaleProvider().setLocale(const Locale('en'));
+														},
+														),
+														_LanguageSelectionTile(
+															language: urduLabel,
+															isSelected: langCode == 'ur',
+															onTap: () async {
+															await LocaleProvider().setLocale(const Locale('ur'));
+														},
+														),
+													],
+												);
 												},
 											),
-											// All other language options are removed
 										],
-									)
+									),
 								),
 							),
 						],
 					),
 				),
 			),
-      // bottomNavigationBar: _BottomNavigationBar(
-      //   navigateTo: _navigateTo,
-      //   navigateHome: _navigateHome,
-      //   // Active Profile Icon in the Nav Bar for this screen
-      //   navigateToProfile: () => _navigateTo(context, const ProfileNSettings()),
-      //   activeIcon: Icons.person,
-      // ),
-		);
+			// bottomNavigationBar: _BottomNavigationBar(
+			//   navigateTo: _navigateTo,
+			//   navigateHome: _navigateHome,
+			//   // Active Profile Icon in the Nav Bar for this screen
+			//   navigateToProfile: () => _navigateTo(context, const ProfileNSettings()),
+			//   activeIcon: Icons.person,
+			// ),
+			);
 	}
 }
 

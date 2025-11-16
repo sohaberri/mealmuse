@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'login.dart'; // Import the LoginScreen
 import 'register.dart'; // Import the RegisterScreen
+import '../providers/locale_provider.dart';
+import '../utils/translation_helper.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -21,7 +23,10 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white, // Background for the top content area
-      body: Column(
+      body: ValueListenableBuilder<Locale?>(
+        valueListenable: LocaleProvider().localeNotifier,
+        builder: (context, locale, _) {
+          return Column(
         children: [
           // === TOP SECTION (Image and Title) ===
           Expanded(
@@ -40,7 +45,7 @@ class HomePage extends StatelessWidget {
                     ),
                     const SizedBox(height: 30),
                     // Main Title
-                    const Text(
+                    Text(
                       'Meal Muse',
                       style: TextStyle(
                         color: Colors.black,
@@ -50,9 +55,10 @@ class HomePage extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     // Subtitle
-                    const Text(
+                    Text(
                       'Your go to pantry assistant!',
                       textAlign: TextAlign.center,
+                      textDirection: TextDirection.ltr,
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 18,
@@ -100,8 +106,8 @@ class HomePage extends StatelessWidget {
                         ),
                         elevation: 5,
                       ),
-                      child: const Text(
-                        'Login',
+                      child: Text(
+                        TranslationHelper.t('Login', 'لاگ اِن'),
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 20,
@@ -113,8 +119,8 @@ class HomePage extends StatelessWidget {
                   const SizedBox(height: 15),
 
                   // --- 'Or' Text ---
-                  const Text(
-                    'Or',
+                  Text(
+                    TranslationHelper.t('Or', 'یا'),
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -142,8 +148,8 @@ class HomePage extends StatelessWidget {
                         ),
                         elevation: 5,
                       ),
-                      child: const Text(
-                        'Register',
+                      child: Text(
+                        TranslationHelper.t('Register', 'رجسٹر کریں'),
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 20,
@@ -157,6 +163,8 @@ class HomePage extends StatelessWidget {
             ),
           ),
         ],
+          );
+        },
       ),
     );
   }
