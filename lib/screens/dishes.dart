@@ -6,6 +6,7 @@ import '../utils/translation_helper.dart';
 import 'home.dart';
 import 'api_service.dart';
 import 'recipe.dart';
+import 'navbar.dart';
 
 // Define the primary color based on the hex code #5C8A94
 const Color _primaryColor = Color(0xFF5C8A94);
@@ -168,6 +169,11 @@ class _FilterScreenState extends State<FilterScreen> {
 
     return Scaffold(
       backgroundColor: background,
+      bottomNavigationBar: CustomBottomNavBar(
+        onTabContentTapped: (index) {},
+        currentIndex: 1,
+        navContext: context,
+      ),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(100.0),
         child: Container(
@@ -716,6 +722,11 @@ class _RecipesScreenState extends State<RecipesScreen> {
     
     return Scaffold(
       backgroundColor: backgroundColor,
+      bottomNavigationBar: CustomBottomNavBar(
+        onTabContentTapped: (index) {},
+        currentIndex: 1,
+        navContext: context,
+      ),
       appBar: AppBar(
         backgroundColor: backgroundColor,
         elevation: 0,

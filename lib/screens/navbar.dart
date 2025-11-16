@@ -3,9 +3,9 @@ import '../providers/theme_provider.dart';
 // Import the screens that the navbar navigates to directly
 import 'expiring.dart'; 
 import 'add_item_screen.dart'; 
-import 'account_screen.dart';
 import 'dishes.dart';
 import 'home.dart';
+import 'settings.dart';
 
 // --- COLOR PALETTE ---
 class AppColors {
@@ -46,11 +46,11 @@ class CustomBottomNavBar extends StatelessWidget {
       );
     } 
     else if (index == 4) {
-      // 2. Add (Plus icon): Navigate to a new page (AddItem)
+      // Profile icon: Navigate to Settings page
       Navigator.push(
         navContext,
         MaterialPageRoute(
-          builder: (context) => const ProfileCheck(),
+          builder: (context) => const Setting_menu(),
         ),
       );
     }

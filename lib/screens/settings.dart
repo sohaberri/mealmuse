@@ -4,10 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../providers/theme_provider.dart';
 import '../providers/locale_provider.dart';
 import '../utils/translation_helper.dart';
-import 'dishes.dart';
-import 'inventory_screen.dart';
-import 'expiring.dart';
-import 'home.dart';
 import 'languages.dart';
 import 'navbar.dart';
 import 'homepage.dart';
@@ -153,6 +149,11 @@ class _Setting_menuState extends State<Setting_menu> {
     final logoutLabel = TranslationHelper.t('Logout', 'لاگ آؤٹ');
     
     return Scaffold(
+      bottomNavigationBar: CustomBottomNavBar(
+        onTabContentTapped: (index) {},
+        currentIndex: 4,
+        navContext: context,
+      ),
       body: SafeArea(
         child: Container(
           constraints: const BoxConstraints.expand(),
@@ -176,7 +177,6 @@ class _Setting_menuState extends State<Setting_menu> {
                       style: TextStyle(
                         color: textColor,
                         fontSize: 32,
-                        fontWeight: FontWeight.w900,
                       ),
                     ),
                     const SizedBox(width: 34), // Spacer
@@ -206,7 +206,6 @@ class _Setting_menuState extends State<Setting_menu> {
                           style: TextStyle(
                             color: subtleTextColor,
                             fontSize: 16,
-                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
@@ -273,7 +272,6 @@ class _Setting_menuState extends State<Setting_menu> {
                           style: TextStyle(
                             color: subtleTextColor,
                             fontSize: 16,
-                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
@@ -379,7 +377,6 @@ class _ProfileCard extends StatelessWidget {
                         style: TextStyle(
                           color: textColor,
                           fontSize: 18,
-                          fontWeight: FontWeight.bold,
                         ),
                       );
                     },
@@ -405,7 +402,6 @@ class _ProfileCard extends StatelessWidget {
                     style: TextStyle(
                       color: _kButtonColor,
                       fontSize: 12,
-                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
@@ -472,7 +468,6 @@ class _SettingsTile extends StatelessWidget {
               style: TextStyle(
                 color: textColor,
                 fontSize: 18,
-                fontWeight: FontWeight.w600,
               ),
             ),
             const Spacer(),
@@ -536,7 +531,6 @@ class _LogoutTile extends StatelessWidget {
               style: TextStyle(
                 color: _kLogoutRed,
                 fontSize: 18,
-                fontWeight: FontWeight.w600,
               ),
             ),
             const Spacer(),

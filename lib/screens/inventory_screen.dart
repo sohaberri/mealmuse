@@ -6,6 +6,7 @@ import '../providers/locale_provider.dart';
 import '../utils/translation_helper.dart';
 import 'inventory_categories.dart';
 import 'dishes.dart';
+import 'navbar.dart';
 
 // --- Data Model for Inventory Items ---
 class InventoryItem {
@@ -115,7 +116,7 @@ class _InventoryCategoriesScreenState extends State<InventoryCategoriesScreen> {
             const SizedBox(width: 15),
             Text(
               _translateCategoryName(category.name),
-              style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
+              style: const TextStyle(fontSize: 18.0),
             ),
             const Spacer(),
             const Icon(Icons.arrow_forward_ios, size: 18.0),
@@ -181,6 +182,11 @@ class _InventoryCategoriesScreenState extends State<InventoryCategoriesScreen> {
     
     return Scaffold(
       backgroundColor: backgroundColor,
+      bottomNavigationBar: CustomBottomNavBar(
+        onTabContentTapped: (index) {},
+        currentIndex: 0,
+        navContext: context,
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
@@ -203,7 +209,6 @@ class _InventoryCategoriesScreenState extends State<InventoryCategoriesScreen> {
                     TranslationHelper.t('Inventory', 'انوینٹری'),
                     style: TextStyle(
                       fontSize: 32.0,
-                      fontWeight: FontWeight.bold,
                       color: textColor,
                     ),
                   ),
@@ -272,7 +277,7 @@ class _InventoryCategoriesScreenState extends State<InventoryCategoriesScreen> {
                   ),
                   child: Text(
                     TranslationHelper.t('Find Recipes →', 'ریسیپیز تلاش کریں →'),
-                    style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontSize: 18.0),
                   ),
                 ),
               ),
@@ -392,7 +397,7 @@ class _SearchInventoryScreenState extends State<SearchInventoryScreen> {
         leading: _getCategoryIcon(data['category'] ?? 'Other'),
         title: Text(
           data['name'] ?? 'Unknown Item',
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          style: const TextStyle(fontSize: 16),
         ),
         subtitle: Text(
           '${data['quantity'] ?? ''} ${data['unit'] ?? ''}',
@@ -459,6 +464,11 @@ class _SearchInventoryScreenState extends State<SearchInventoryScreen> {
     
     return Scaffold(
       backgroundColor: backgroundColor,
+      bottomNavigationBar: CustomBottomNavBar(
+        onTabContentTapped: (index) {},
+        currentIndex: 0,
+        navContext: context,
+      ),
       appBar: AppBar(
         backgroundColor: backgroundColor,
         elevation: 0,

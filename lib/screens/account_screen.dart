@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../providers/theme_provider.dart';
 import '../providers/locale_provider.dart';
 import '../utils/translation_helper.dart';
+import 'navbar.dart';
 
 // --------------------------------------------------------------------------
 // --- FIREBASE USER DATA CLASS ---
@@ -399,6 +400,11 @@ class ProfileState extends State<ProfileCheck> {
     final saveChangesLabel = TranslationHelper.t('Save Changes', 'تبدیلیاں محفوظ کریں');
 
     return Scaffold(
+      bottomNavigationBar: CustomBottomNavBar(
+        onTabContentTapped: (index) {},
+        currentIndex: 4,
+        navContext: context,
+      ),
       body: SafeArea(
         child: Container(
           constraints: const BoxConstraints.expand(),

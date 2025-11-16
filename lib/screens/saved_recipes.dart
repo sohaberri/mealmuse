@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../providers/theme_provider.dart';
 import '../providers/locale_provider.dart';
 import '../utils/translation_helper.dart';
+import 'navbar.dart';
 
 // --- MAIN APP ENTRY POINT ---
 void main() {
@@ -425,6 +426,11 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
 
     return Scaffold(
       backgroundColor: backgroundColor,
+      bottomNavigationBar: CustomBottomNavBar(
+        onTabContentTapped: (index) {},
+        currentIndex: 0,
+        navContext: context,
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[

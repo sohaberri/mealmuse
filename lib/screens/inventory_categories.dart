@@ -5,6 +5,7 @@ import '../providers/theme_provider.dart';
 import '../providers/locale_provider.dart';
 import '../utils/translation_helper.dart';
 import 'add_item_screen.dart';
+import 'navbar.dart';
 
 // --- Data Models ---
 class InventoryItem {
@@ -384,7 +385,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
                             item.name,
                             style: TextStyle(
                               fontSize: 20,
-                              fontWeight: FontWeight.bold,
                               color: textColor,
                             ),
                           ),
@@ -423,6 +423,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
     
     return Scaffold(
       backgroundColor: backgroundColor,
+      bottomNavigationBar: CustomBottomNavBar(
+        onTabContentTapped: (index) {},
+        currentIndex: 0,
+        navContext: context,
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -449,7 +454,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     TranslationHelper.t(widget.category, _translateCategory(widget.category)),
                     style: TextStyle(
                       fontSize: 32.0,
-                      fontWeight: FontWeight.bold,
                       color: textColor,
                     ),
                   ),
@@ -765,7 +769,6 @@ class _EditItemScreenState extends State<EditItemScreen> {
         title,
         style: const TextStyle(
           fontSize: 18,
-          fontWeight: FontWeight.bold,
           color: Colors.black87,
         ),
       ),
@@ -979,7 +982,6 @@ class _EditItemScreenState extends State<EditItemScreen> {
           'Edit Item',
           style: TextStyle(
             color: textColor,
-            fontWeight: FontWeight.bold,
             fontSize: 24,
           ),
         ),
@@ -1222,7 +1224,7 @@ class _CategorySearchScreenState extends State<CategorySearchScreen> {
       child: ListTile(
         title: Text(
           data['name'] ?? 'Unknown Item',
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          style: const TextStyle(fontSize: 16),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1354,6 +1356,11 @@ class ItemDetailScreen extends StatelessWidget {
     
     return Scaffold(
       backgroundColor: backgroundColor,
+      bottomNavigationBar: CustomBottomNavBar(
+        onTabContentTapped: (index) {},
+        currentIndex: 0,
+        navContext: context,
+      ),
       appBar: AppBar(
         backgroundColor: backgroundColor,
         elevation: 0,
@@ -1382,7 +1389,7 @@ class ItemDetailScreen extends StatelessWidget {
                       leading: Icon(Icons.inventory_2, size: 40, color: item.backgroundColor),
                       title: Text(
                         item.name,
-                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textColor),
+                        style: TextStyle(fontSize: 24, color: textColor),
                       ),
                       subtitle: Text(item.category, style: TextStyle(color: subtitleColor)),
                     ),
@@ -1414,7 +1421,7 @@ class ItemDetailScreen extends StatelessWidget {
         children: [
           Text(
             '$label: ',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: labelColor),
+            style: TextStyle(fontSize: 16, color: labelColor),
           ),
           Text(
             value,

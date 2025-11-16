@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 import '../providers/theme_provider.dart';
 import '../providers/locale_provider.dart';
 import '../utils/translation_helper.dart';
-import 'dishes.dart';
-import 'inventory_screen.dart';
-import 'expiring.dart';
-import 'home.dart';
+import 'navbar.dart';
 
 // --------------------------------------------------------------------------
 // --- COLOR CONSTANTS (Consistent with account_screen.dart) ---
@@ -51,6 +48,11 @@ class LangState extends State<Lang> {
 		final langTitle = TranslationHelper.get('language');
 
 		return Scaffold(
+			bottomNavigationBar: CustomBottomNavBar(
+				onTabContentTapped: (index) {},
+				currentIndex: 4,
+				navContext: context,
+			),
 			body: SafeArea(
 				child: Container(
 					constraints: const BoxConstraints.expand(),
@@ -74,7 +76,6 @@ class LangState extends State<Lang> {
 										style: TextStyle(
 											color: textColor,
 											fontSize: 32,
-											fontWeight: FontWeight.w900,
 										),
 										),
 										const SizedBox(width: 34), // Spacer
@@ -183,7 +184,6 @@ class _LanguageSelectionTile extends StatelessWidget {
               style: TextStyle(
                 color: isSelected ? Colors.white : unselectedTextColor,
                 fontSize: 18,
-                fontWeight: FontWeight.w600,
               ),
             ),
             if (isSelected)

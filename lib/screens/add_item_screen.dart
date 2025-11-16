@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../providers/theme_provider.dart';
 import '../providers/locale_provider.dart';
 import '../utils/translation_helper.dart';
+import 'navbar.dart';
 
 // The primary color derived from the selected 'Vegetable' pill in the screenshot
 const Color primaryColor = Color(0xFF5B8A8A);
@@ -461,6 +462,11 @@ class _AddItemScreenState extends State<AddItemScreen> {
     
     return Scaffold(
       backgroundColor: bgColor,
+      bottomNavigationBar: CustomBottomNavBar(
+        onTabContentTapped: (index) {},
+        currentIndex: 1,
+        navContext: context,
+      ),
       appBar: AppBar(
         backgroundColor: appBarBg,
         elevation: 0,
