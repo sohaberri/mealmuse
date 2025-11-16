@@ -229,10 +229,16 @@ class ProfileState extends State<ProfileCheck> {
   }
 
   Widget _buildNameDialogContent(BuildContext context, TextEditingController controller) {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final dialogBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+    final fieldBg = isDarkMode ? const Color(0xFF3A3A3A) : _kSubtleGray;
+    final hintColor = isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[400];
+    
     return Container(
       padding: const EdgeInsets.all(30),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: dialogBg,
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
@@ -245,30 +251,30 @@ class ProfileState extends State<ProfileCheck> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          const Text(
+          Text(
             "Update Name",
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: textColor,
             ),
           ),
           const SizedBox(height: 25),
           TextField(
             controller: controller,
             textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 18, color: textColor, fontWeight: FontWeight.w600),
             decoration: InputDecoration(
               hintText: "Enter New Name",
-              hintStyle: TextStyle(color: Colors.grey[400], fontSize: 18),
+              hintStyle: TextStyle(color: hintColor, fontSize: 18),
               filled: true,
-              fillColor: _kSubtleGray,
+              fillColor: fieldBg,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(15),
                 borderSide: BorderSide.none,
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             ),
-            style: const TextStyle(fontSize: 18, color: Colors.black87, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 30),
           Row(

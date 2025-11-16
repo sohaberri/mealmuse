@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-// Removed unused theme provider import
+import '../providers/theme_provider.dart';
 import '../providers/locale_provider.dart';
 import '../utils/translation_helper.dart';
 
@@ -301,12 +301,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   void _showErrorDialog(BuildContext context, String title, String content) {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final dialogBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+    
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(title),
-          content: Text(content),
+          backgroundColor: dialogBg,
+          title: Text(title, style: TextStyle(color: textColor)),
+          content: Text(content, style: TextStyle(color: textColor)),
           actions: [
             TextButton(
               onPressed: () {
@@ -321,12 +326,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   void _showSuccessDialog(BuildContext context) {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final dialogBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+    
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(TranslationHelper.t('Registration Successful', 'رجسٹریشن کامیاب')), 
-          content: Text(TranslationHelper.t('Your account has been created successfully!', 'آپ کا اکاؤنٹ کامیابی سے بنا دیا گیا ہے!')),
+          backgroundColor: dialogBg,
+          title: Text(TranslationHelper.t('Registration Successful', 'رجسٹریشن کامیاب'), style: TextStyle(color: textColor)), 
+          content: Text(TranslationHelper.t('Your account has been created successfully!', 'آپ کا اکاؤنٹ کامیابی سے بنا دیا گیا ہے!'), style: TextStyle(color: textColor)),
           actions: [
             TextButton(
               onPressed: () {

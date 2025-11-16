@@ -195,16 +195,16 @@ class _InventoryCategoriesScreenState extends State<InventoryCategoriesScreen> {
             children: [
               // Header with Back Button
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.arrow_back_ios, size: 28.0, color: textColor),
+                    icon: Icon(Icons.arrow_back_ios_new, size: 28.0, color: textColor),
                     onPressed: () {
                       if (Navigator.canPop(context)) {
                         Navigator.pop(context);
                       }
                     },
                   ),
-                  const SizedBox(width: 10),
                   Text(
                     TranslationHelper.t('Inventory', 'انوینٹری'),
                     style: TextStyle(
@@ -212,6 +212,7 @@ class _InventoryCategoriesScreenState extends State<InventoryCategoriesScreen> {
                       color: textColor,
                     ),
                   ),
+                  const SizedBox(width: 48), // Spacer to balance the back button
                 ],
               ),
               const SizedBox(height: 30),

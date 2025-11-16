@@ -160,12 +160,17 @@ class _AddItemScreenState extends State<AddItemScreen> {
   }
 
   void _showErrorDialog(String title, String content) {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final dialogBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+    
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(title),
-          content: Text(content),
+          backgroundColor: dialogBg,
+          title: Text(title, style: TextStyle(color: textColor)),
+          content: Text(content, style: TextStyle(color: textColor)),
           actions: [
             TextButton(
               onPressed: () {
@@ -180,12 +185,17 @@ class _AddItemScreenState extends State<AddItemScreen> {
   }
 
   void _showSuccessDialog() {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final dialogBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+    
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(TranslationHelper.t('Success', 'کامیابی')),
-          content: Text(TranslationHelper.t('Item added to inventory successfully!', 'چیز انوینٹری میں کامیابی سے شامل کی گئی!')),
+          backgroundColor: dialogBg,
+          title: Text(TranslationHelper.t('Success', 'کامیابی'), style: TextStyle(color: textColor)),
+          content: Text(TranslationHelper.t('Item added to inventory successfully!', 'چیز انوینٹری میں کامیابی سے شامل کی گئی!'), style: TextStyle(color: textColor)),
           actions: [
             TextButton(
               onPressed: () {
@@ -484,7 +494,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         backgroundColor: appBarBg,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: textColor),
+          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 28),
           onPressed: () {
             Navigator.of(context).pop();
           },

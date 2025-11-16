@@ -161,12 +161,17 @@ class _ExpiringItemsScreenState extends State<ExpiringItemsScreen> {
 
   // Reusable widget for the item card in the list
   Widget _buildItemCard(ExpiringItem item) {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final cardBg = isDarkMode ? const Color(0xFF2A2A2A) : _primaryWhite;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : _primaryBlack;
+    final subtitleColor = isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[600];
+    
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
       child: Container(
         padding: const EdgeInsets.all(20.0),
         decoration: BoxDecoration(
-          color: _primaryWhite,
+          color: cardBg,
           borderRadius: BorderRadius.circular(20.0),
           boxShadow: [
             BoxShadow(
@@ -185,10 +190,10 @@ class _ExpiringItemsScreenState extends State<ExpiringItemsScreen> {
                 children: [
                   Text(
                     item.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: _primaryBlack,
+                      color: textColor,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -196,22 +201,37 @@ class _ExpiringItemsScreenState extends State<ExpiringItemsScreen> {
                     children: [
                       Text(
                         '${TranslationHelper.t('Count', 'تعداد')}: ${item.count}',
-                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                        style: TextStyle(fontSize: 14, color: subtitleColor),
                       ),
                       const SizedBox(width: 10),
                       Text(
                         '${TranslationHelper.t('Expires In', 'میعاد باقی')}: ${item.expiry}',
-                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                        style: TextStyle(fontSize: 14, color: subtitleColor),
                       ),
                     ],
                   ),
                 ],
               ),
             ),
-            Icon(
-              item.icon,
-              color: _primaryRed,
-              size: 40,
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: _primaryRed,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  '!',
+                  style: TextStyle(
+                    color: _primaryWhite,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    height: 1.0,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ),
           ],
         ),
@@ -293,7 +313,10 @@ class _ExpiringItemsScreenState extends State<ExpiringItemsScreen> {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (BuildContext context, int index) {
-          return _buildItemCard(_expiringItems[index]);
+          return Padding(
+            padding: index == 0 ? const EdgeInsets.only(top: 24.0) : EdgeInsets.zero,
+            child: _buildItemCard(_expiringItems[index]),
+          );
         },
         childCount: _expiringItems.length,
       ),
@@ -320,6 +343,7 @@ class _ExpiringItemsScreenState extends State<ExpiringItemsScreen> {
             pinned: true,
             backgroundColor: Colors.transparent,
             elevation: 0,
+            automaticallyImplyLeading: false,
             flexibleSpace: Container(
               decoration: const BoxDecoration(
                 color: _primaryRed,
@@ -331,27 +355,43 @@ class _ExpiringItemsScreenState extends State<ExpiringItemsScreen> {
               child: ValueListenableBuilder<Locale?>(
                 valueListenable: LocaleProvider().localeNotifier,
                 builder: (context, locale, _) {
-                  final isUrdu = locale?.languageCode == 'ur';
                   return FlexibleSpaceBar(
-                    centerTitle: isUrdu,
-                    titlePadding: isUrdu ? const EdgeInsets.only(bottom: 16) : const EdgeInsets.only(left: 60, bottom: 16),
-                    title: Text(
-                      TranslationHelper.t('Expiring Soon', 'جلد ختم ہونے والی اشیاء'),
-                      style: TextStyle(
-                        color: _primaryWhite,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24,
+                    titlePadding: EdgeInsets.zero,
+                    title: SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 20.0, left: 15.0, right: 15.0), // ADJUST VERTICAL POSITION: Change top value to move up/down
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 0.0, top: 0.0), // Move back button left/up
+                              child: IconButton(
+                                icon: const Icon(Icons.arrow_back_ios_new, color: _primaryWhite, size: 24),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10.0),
+                              child: Text(
+                                TranslationHelper.t('Expiring Soon', 'جلد ختم ہونے والی اشیاء'),
+                                style: TextStyle(
+                                  color: _primaryWhite,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 48), // Spacer to balance the back button
+                          ],
+                        ),
                       ),
                     ),
                   );
                 },
               ),
-            ),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: _primaryWhite),
-              onPressed: () {
-                Navigator.pop(context);
-              },
             ),
           ),
 

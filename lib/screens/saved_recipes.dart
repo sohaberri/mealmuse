@@ -451,32 +451,32 @@ class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
                   ),
                   child: SafeArea(
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
+                      padding: const EdgeInsets.only(top: 20.0, left: 15.0, right: 15.0),
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           // Back Button
                           IconButton(
-                            icon: Icon(Icons.arrow_back_ios, color: headerText),
+                            icon: Icon(Icons.arrow_back_ios_new, size: 30, color: headerText),
                             onPressed: () {
                               Navigator.pop(context);
                             },
                           ),
                           // Title
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 48.0),
-                              child: Center(
-                                child: Text(
-                                  TranslationHelper.t('Saved Recipes', 'محفوظ ریسیپیز'),
-                                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: headerText,
-                                      ),
-                                ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10.0),
+                            child: Text(
+                              TranslationHelper.t('Saved Recipes', 'محفوظ ریسیپیز'),
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: headerText,
                               ),
                             ),
                           ),
+                          // Spacer to balance the back button
+                          const SizedBox(width: 48),
                         ],
                       ),
                     ),

@@ -90,6 +90,9 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
 
   // Helper widget to build ingredient rows
   Widget _buildIngredientItem(dynamic ingredient) {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black87;
+    
     final name = ingredient['nameClean'] ?? ingredient['original'] ?? 'Unknown ingredient';
     final amount = ingredient['amount'] ?? '';
     final unit = ingredient['unit'] ?? '';
@@ -103,7 +106,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
           Expanded(
             child: Text(
               '${amount.toString()} $unit ${name.toString().capitalize()}',
-              style: TextStyle(fontSize: 16.0, height: 1.5, color: Colors.black87),
+              style: TextStyle(fontSize: 16.0, height: 1.5, color: textColor),
             ),
           ),
         ],
@@ -113,6 +116,9 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
 
   // Helper widget to build recipe steps
   Widget _buildRecipeStep(dynamic step) {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black87;
+    
     final stepNumber = step['number'] ?? 0;
     final stepText = step['step'] ?? '';
     
@@ -127,13 +133,13 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               fontSize: 16.0,
               fontWeight: FontWeight.bold,
               height: 1.5,
-              color: Colors.black87,
+              color: textColor,
             ),
           ),
           SizedBox(height: 8),
           Text(
             stepText,
-            style: TextStyle(fontSize: 16.0, height: 1.5, color: Colors.black87),
+            style: TextStyle(fontSize: 16.0, height: 1.5, color: textColor),
           ),
         ],
       ),
@@ -295,7 +301,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                   style: TextStyle(
                     fontSize: 30.0,
                     fontWeight: FontWeight.w900,
-                    color: Colors.black,
+                    color: textColor,
                   ),
                 ),
 
@@ -307,22 +313,22 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                   children: [
                     Text(
                       'Likes: $likes',
-                      style: TextStyle(fontSize: 16.0, color: Colors.grey[700]),
+                      style: TextStyle(fontSize: 16.0, color: isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[700]),
                     ),
                     SizedBox(height: 4),
                     Text(
                       'Ready in: $_cookingTime minutes',
-                      style: TextStyle(fontSize: 16.0, color: Colors.grey[700]),
+                      style: TextStyle(fontSize: 16.0, color: isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[700]),
                     ),
                     SizedBox(height: 4),
                     Text(
                       'Servings: $_servings',
-                      style: TextStyle(fontSize: 16.0, color: Colors.grey[700]),
+                      style: TextStyle(fontSize: 16.0, color: isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[700]),
                     ),
                   ],
                 ),
                 
-                Divider(height: 32, thickness: 1, color: Colors.grey[200]),
+                Divider(height: 32, thickness: 1, color: isDarkMode ? const Color(0xFF2A2A2A) : Colors.grey[200]),
                 
                 // --- Ingredients Section ---
                 Text(
@@ -330,6 +336,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                   style: TextStyle(
                     fontSize: 24.0,
                     fontWeight: FontWeight.bold,
+                    color: textColor,
                   ),
                 ),
                 
@@ -351,6 +358,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                   style: TextStyle(
                     fontSize: 24.0,
                     fontWeight: FontWeight.bold,
+                    color: textColor,
                   ),
                 ),
 
@@ -378,7 +386,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             child: Container(
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: backgroundColor,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.08),

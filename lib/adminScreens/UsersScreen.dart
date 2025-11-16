@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'users.dart'; 
 import 'userInventory.dart';
 import 'userCard.dart';
+import '../providers/theme_provider.dart';
 
 class UsersScreen extends StatefulWidget {
-  const UsersScreen({Key? key}) : super(key: key);
+  const UsersScreen({super.key});
 
   @override
   State<UsersScreen> createState() => _UsersScreenState();
@@ -149,7 +150,7 @@ class _UsersScreenState extends State<UsersScreen> {
         
         // Filter out admin@mealmuse.com
         final filteredUsers = users.where((user) => 
-          user.email?.toLowerCase().trim() != 'admin@mealmuse.com'
+          user.email.toLowerCase().trim() != 'admin@mealmuse.com'
         ).toList();
 
         if (filteredUsers.isEmpty) {
@@ -208,14 +209,20 @@ class _UsersScreenState extends State<UsersScreen> {
   }
 
   void _showDeleteConfirmationDialog(BuildContext context, User user) {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final dialogBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete User'),
+        backgroundColor: dialogBg,
+        title: Text('Delete User', style: TextStyle(color: textColor)),
         content: Text(
           'Are you sure you want to delete ${user.username}? '
           'This will also delete all their inventory and saved recipes. '
           'This action cannot be undone.',
+          style: TextStyle(color: textColor),
         ),
         actions: [
           TextButton(

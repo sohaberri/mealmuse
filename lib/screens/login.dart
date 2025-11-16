@@ -106,12 +106,17 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       // Show error dialog
+      final isDarkMode = ThemeProvider().darkModeEnabled;
+      final dialogBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+      final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+      
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text(TranslationHelper.t('Login Failed', 'لاگ اِن ناکام ہوا')),
-            content: Text(errorMessage),
+            backgroundColor: dialogBg,
+            title: Text(TranslationHelper.t('Login Failed', 'لاگ اِن ناکام ہوا'), style: TextStyle(color: textColor)),
+            content: Text(errorMessage, style: TextStyle(color: textColor)),
             actions: [
               TextButton(
                 onPressed: () {
@@ -128,12 +133,17 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.of(context).pop();
       
       // Show generic error
+      final isDarkMode = ThemeProvider().darkModeEnabled;
+      final dialogBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+      final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+      
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text(TranslationHelper.t('Error', 'خرابی')),
-            content: Text("${TranslationHelper.t('An unexpected error occurred', 'غیر متوقع خرابی پیش آگئی')}: $e"),
+            backgroundColor: dialogBg,
+            title: Text(TranslationHelper.t('Error', 'خرابی'), style: TextStyle(color: textColor)),
+            content: Text("${TranslationHelper.t('An unexpected error occurred', 'غیر متوقع خرابی پیش آگئی')}: $e", style: TextStyle(color: textColor)),
             actions: [
               TextButton(
                 onPressed: () {
@@ -150,23 +160,33 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _showForgotPasswordDialog(BuildContext context) {
     TextEditingController emailController = TextEditingController();
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final dialogBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+    final fieldBg = isDarkMode ? const Color(0xFF3A3A3A) : Colors.white;
     
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(TranslationHelper.t('Reset Password', 'پاس ورڈ ری سیٹ کریں')),
+          backgroundColor: dialogBg,
+          title: Text(TranslationHelper.t('Reset Password', 'پاس ورڈ ری سیٹ کریں'), style: TextStyle(color: textColor)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(TranslationHelper.t("Enter your email address and we'll send you a password reset link.", 'اپنا ای میل پتہ درج کریں، ہم آپ کو پاس ورڈ ری سیٹ لنک بھیجیں گے۔')),
+              Text(TranslationHelper.t("Enter your email address and we'll send you a password reset link.", 'اپنا ای میل پتہ درج کریں، ہم آپ کو پاس ورڈ ری سیٹ لنک بھیجیں گے۔'), style: TextStyle(color: textColor)),
               const SizedBox(height: 20),
               TextField(
                 controller: emailController,
+                style: TextStyle(color: textColor),
                 decoration: InputDecoration(
                   labelText: TranslationHelper.t('Email', 'ای میل'),
+                  labelStyle: TextStyle(color: textColor),
                   hintText: TranslationHelper.t('Enter your email', 'اپنا ای میل درج کریں'),
+                  hintStyle: TextStyle(color: isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey),
                   border: const OutlineInputBorder(),
+                  filled: true,
+                  fillColor: fieldBg,
                 ),
               ),
             ],
@@ -220,12 +240,17 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.of(context).pop(); // Dismiss dialog
       
       // Show success message
+      final isDarkMode = ThemeProvider().darkModeEnabled;
+      final dialogBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+      final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+      
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text(TranslationHelper.t('Email Sent', 'ای میل بھیج دی گئی')),
-            content: Text("${TranslationHelper.t('Password reset link has been sent to', 'پاس ورڈ ری سیٹ لنک اس ای میل پر بھیج دیا گیا ہے')}: $email. ${TranslationHelper.t('Please check your inbox.', 'براہ کرم اپنے ان باکس کو چیک کریں۔')}") ,
+            backgroundColor: dialogBg,
+            title: Text(TranslationHelper.t('Email Sent', 'ای میل بھیج دی گئی'), style: TextStyle(color: textColor)),
+            content: Text("${TranslationHelper.t('Password reset link has been sent to', 'پاس ورڈ ری سیٹ لنک اس ای میل پر بھیج دیا گیا ہے')}: $email. ${TranslationHelper.t('Please check your inbox.', 'براہ کرم اپنے ان باکس کو چیک کریں۔')}", style: TextStyle(color: textColor)) ,
             actions: [
               TextButton(
                 onPressed: () {

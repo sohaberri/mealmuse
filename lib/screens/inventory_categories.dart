@@ -233,12 +233,17 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
   // Show delete confirmation dialog
   void _showDeleteDialog(InventoryItem item) {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final dialogBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+    
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(TranslationHelper.t('Delete Item', 'آئٹم حذف کریں')),
-          content: Text(TranslationHelper.t('Are you sure you want to delete ${item.name}?', 'کیا آپ یقینی ہیں کہ آپ ${item.name} کو حذف کرنا چاہتے ہیں؟')),
+          backgroundColor: dialogBg,
+          title: Text(TranslationHelper.t('Delete Item', 'آئٹم حذف کریں'), style: TextStyle(color: textColor)),
+          content: Text(TranslationHelper.t('Are you sure you want to delete ${item.name}?', 'کیا آپ یقینی ہیں کہ آپ ${item.name} کو حذف کرنا چاہتے ہیں؟'), style: TextStyle(color: textColor)),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -293,8 +298,13 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
   // Widget for edit/delete dropdown button
   Widget _buildEditDeleteDropdown(InventoryItem item) {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final menuBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+    final menuTextColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+    
     return PopupMenuButton<String>(
-      icon: const Icon(Icons.more_vert, color: Colors.grey),
+      icon: Icon(Icons.more_vert, color: isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey),
+      color: menuBg,
       onSelected: (value) {
         if (value == 'edit') {
           _navigateToEditItem(context, item);
@@ -309,7 +319,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
             children: [
               const Icon(Icons.edit, color: Colors.blue),
               const SizedBox(width: 8),
-              Text(TranslationHelper.t('Edit', 'ترمیم')),
+              Text(TranslationHelper.t('Edit', 'ترمیم'), style: TextStyle(color: menuTextColor)),
             ],
           ),
         ),
@@ -319,7 +329,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
             children: [
               const Icon(Icons.delete, color: Color.fromARGB(255, 144, 11, 9)),
               const SizedBox(width: 8),
-              Text(TranslationHelper.t('Delete', 'حذف')),
+              Text(TranslationHelper.t('Delete', 'حذف'), style: TextStyle(color: menuTextColor)),
             ],
           ),
         ),
@@ -435,11 +445,12 @@ class _InventoryScreenState extends State<InventoryScreen> {
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // Back button
                   IconButton(
                     icon: Icon(
-                      Icons.arrow_back_ios,
+                      Icons.arrow_back_ios_new,
                       size: 28.0,
                       color: textColor,
                     ),
@@ -449,7 +460,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       }
                     },
                   ),
-                  const SizedBox(width: 10),
                   Text(
                     TranslationHelper.t(widget.category, _translateCategory(widget.category)),
                     style: TextStyle(
@@ -457,7 +467,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       color: textColor,
                     ),
                   ),
-                  const Spacer(),
                   // Plus Button (Navigates to AddItemScreen)
                   IconButton(
                     icon: Icon(Icons.add, size: 32.0, color: textColor),
@@ -721,12 +730,17 @@ class _EditItemScreenState extends State<EditItemScreen> {
   }
 
   void _showErrorDialog(String title, String content) {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final dialogBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+    
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(title),
-          content: Text(content),
+          backgroundColor: dialogBg,
+          title: Text(title, style: TextStyle(color: textColor)),
+          content: Text(content, style: TextStyle(color: textColor)),
           actions: [
             TextButton(
               onPressed: () {
@@ -741,12 +755,17 @@ class _EditItemScreenState extends State<EditItemScreen> {
   }
 
   void _showSuccessDialog() {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final dialogBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+    
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Success'),
-          content: const Text('Item updated successfully!'),
+          backgroundColor: dialogBg,
+          title: Text('Success', style: TextStyle(color: textColor)),
+          content: Text('Item updated successfully!', style: TextStyle(color: textColor)),
           actions: [
             TextButton(
               onPressed: () {
@@ -763,13 +782,16 @@ class _EditItemScreenState extends State<EditItemScreen> {
 
   // Helper widget to consistently style section titles
   Widget _buildSectionTitle(String title) {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black87;
+    
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 18,
-          color: Colors.black87,
+          color: textColor,
         ),
       ),
     );
@@ -784,6 +806,11 @@ class _EditItemScreenState extends State<EditItemScreen> {
     TextInputType keyboardType = TextInputType.text,
     bool isRequired = false,
   }) {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final fieldBg = isDarkMode ? const Color(0xFF2A2A2A) : const Color(0xFFF0F0F0);
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+    final hintColor = isDarkMode ? const Color(0xFF707070) : Colors.grey[400];
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -805,11 +832,12 @@ class _EditItemScreenState extends State<EditItemScreen> {
           controller: controller,
           maxLines: maxLines,
           keyboardType: keyboardType,
+          style: TextStyle(color: textColor),
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: TextStyle(color: Colors.grey[400]),
+            hintStyle: TextStyle(color: hintColor),
             filled: true,
-            fillColor: const Color(0xFFF0F0F0),
+            fillColor: fieldBg,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.0),
@@ -831,6 +859,10 @@ class _EditItemScreenState extends State<EditItemScreen> {
 
   // Section for category selection
   Widget _buildCategorySection() {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final unselectedBg = isDarkMode ? const Color(0xFF2A2A2A) : const Color(0xFFF0F0F0);
+    final unselectedText = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black87;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -848,30 +880,20 @@ class _EditItemScreenState extends State<EditItemScreen> {
               },
               borderRadius: BorderRadius.circular(20),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xFF5B8A8A) : const Color(0xFFF0F0F0),
+                  color: isSelected ? const Color(0xFF5B8A8A) : unselectedBg,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: isSelected ? const Color(0xFF5B8A8A) : Colors.transparent,
+                    color: isSelected ? const Color(0xFF5B8A8A) : (isDarkMode ? const Color(0xFF3A3A3A) : Colors.grey[300]!),
                     width: 1.5,
                   ),
-                  boxShadow: isSelected
-                      ? [
-                          BoxShadow(
-                            color: const Color(0xFF5B8A8A).withOpacity(0.3),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ]
-                      : null,
                 ),
                 child: Text(
                   category,
                   style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.black87,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                     fontSize: 14,
+                    color: isSelected ? Colors.white : unselectedText,
                   ),
                 ),
               ),
@@ -884,6 +906,12 @@ class _EditItemScreenState extends State<EditItemScreen> {
 
   // Section for Quantity (Number input + Unit Dropdown)
   Widget _buildQuantitySection() {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final fieldBg = isDarkMode ? const Color(0xFF2A2A2A) : const Color(0xFFF0F0F0);
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+    final hintColor = isDarkMode ? const Color(0xFF707070) : Colors.grey[400];
+    final dropdownIconColor = isDarkMode ? const Color(0xFFB0B0B0) : Colors.black87;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -896,11 +924,12 @@ class _EditItemScreenState extends State<EditItemScreen> {
               child: TextFormField(
                 controller: _quantityController,
                 keyboardType: TextInputType.number,
+                style: TextStyle(color: textColor),
                 decoration: InputDecoration(
                   hintText: 'Amount',
-                  hintStyle: TextStyle(color: Colors.grey[400]),
+                  hintStyle: TextStyle(color: hintColor),
                   filled: true,
-                  fillColor: const Color(0xFFF0F0F0),
+                  fillColor: fieldBg,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
@@ -924,12 +953,13 @@ class _EditItemScreenState extends State<EditItemScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF0F0F0),
+                  color: fieldBg,
                   borderRadius: BorderRadius.circular(12.0),
                 ),
                 child: DropdownButtonFormField<String>(
                   initialValue: _selectedUnit,
-                  icon: const Icon(Icons.keyboard_arrow_down, color: Colors.black87),
+                  icon: Icon(Icons.keyboard_arrow_down, color: dropdownIconColor),
+                  dropdownColor: fieldBg,
                   decoration: const InputDecoration(
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.zero,
@@ -939,7 +969,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
                       value: unit,
                       child: Text(
                         unit,
-                        style: const TextStyle(color: Colors.black87, fontSize: 16),
+                        style: TextStyle(color: textColor, fontSize: 16),
                       ),
                     );
                   }).toList(),
@@ -950,7 +980,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
                       });
                     }
                   },
-                  style: const TextStyle(fontSize: 16),
+                  style: TextStyle(fontSize: 16, color: textColor),
                   isExpanded: true,
                 ),
               ),
@@ -973,7 +1003,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
         backgroundColor: backgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: textColor),
+          icon: Icon(Icons.arrow_back_ios_new, size: 28, color: textColor),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -1205,6 +1235,11 @@ class _CategorySearchScreenState extends State<CategorySearchScreen> {
     final data = doc.data() as Map<String, dynamic>;
     final item = InventoryItem.fromFirestore(doc);
     
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final cardBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+    final subtitleColor = isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[600];
+    
     Color expiryColor = Colors.grey;
     if (item.daysUntilExpiry != null) {
       if (item.daysUntilExpiry! < 0) {
@@ -1221,17 +1256,18 @@ class _CategorySearchScreenState extends State<CategorySearchScreen> {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       elevation: 2,
+      color: cardBg,
       child: ListTile(
         title: Text(
           data['name'] ?? 'Unknown Item',
-          style: const TextStyle(fontSize: 16),
+          style: TextStyle(fontSize: 16, color: textColor),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               '${data['quantity'] ?? ''} ${data['unit'] ?? ''}',
-              style: TextStyle(color: Colors.grey[600]),
+              style: TextStyle(color: subtitleColor),
             ),
             Text(
               'Expires: ${item.expiryDisplay}',
@@ -1273,7 +1309,7 @@ class _CategorySearchScreenState extends State<CategorySearchScreen> {
         backgroundColor: backgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: textColor),
+          icon: Icon(Icons.arrow_back_ios_new, size: 28, color: textColor),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: TextField(
@@ -1433,12 +1469,17 @@ class ItemDetailScreen extends StatelessWidget {
   }
 
   void _showDeleteDialog(BuildContext context, InventoryItem item) {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final dialogBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+    
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Delete Item'),
-          content: Text('Are you sure you want to delete ${item.name}?'),
+          backgroundColor: dialogBg,
+          title: Text('Delete Item', style: TextStyle(color: textColor)),
+          content: Text('Are you sure you want to delete ${item.name}?', style: TextStyle(color: textColor)),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),

@@ -129,12 +129,17 @@ class _Setting_menuState extends State<Setting_menu> {
   Future<void> _logout(BuildContext context) async {
     try {
       // Show confirmation dialog
+      final isDarkMode = ThemeProvider().darkModeEnabled;
+      final dialogBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+      final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+      
       final bool? shouldLogout = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text(TranslationHelper.t('Logout', 'لاگ آؤٹ')),
-            content: Text(TranslationHelper.t('Are you sure you want to logout?', 'کیا آپ واقعی لاگ آؤٹ کرنا چاہتے ہیں؟')),
+            backgroundColor: dialogBg,
+            title: Text(TranslationHelper.t('Logout', 'لاگ آؤٹ'), style: TextStyle(color: textColor)),
+            content: Text(TranslationHelper.t('Are you sure you want to logout?', 'کیا آپ واقعی لاگ آؤٹ کرنا چاہتے ہیں؟'), style: TextStyle(color: textColor)),
             actions: <Widget>[
               TextButton(
                 child: Text(TranslationHelper.t('Cancel', 'منسوخ کریں')),

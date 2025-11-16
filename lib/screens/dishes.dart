@@ -449,6 +449,11 @@ class _RecipesScreenState extends State<RecipesScreen> {
   }
 
   Widget _buildRecipeCard(Map<String, dynamic> recipe) {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final cardBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+    final subtitleColor = isDarkMode ? const Color(0xFFB0B0B0) : Colors.grey[600];
+    
     // Handle different response formats
     final String recipeTitle = recipe['title'] ?? 'Untitled Recipe';
     final String imageUrl = recipe['image'] ?? 'https://via.placeholder.com/100x100';
@@ -458,6 +463,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
     final int? aggregateLikes = recipe['aggregateLikes'];
 
     return Card(
+      color: cardBg,
       elevation: 2,
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: GestureDetector(
@@ -493,8 +499,9 @@ class _RecipesScreenState extends State<RecipesScreen> {
                   children: [
                     Text(
                       recipeTitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
+                        color: textColor,
                         // fontWeight removed due to analyzer constraint
                       ),
                       maxLines: 2,
@@ -508,7 +515,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
                         'Missing ingredients: $missedIngredientCount',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey[600],
+                          color: subtitleColor,
                         ),
                       ),
                     
@@ -517,7 +524,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
                         'Ready in: $readyInMinutes minutes',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey[600],
+                          color: subtitleColor,
                         ),
                       ),
                     
@@ -526,7 +533,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
                         'Health score: $healthScore',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey[600],
+                          color: subtitleColor,
                         ),
                       ),
                     
@@ -535,7 +542,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
                         'Likes: $aggregateLikes',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey[600],
+                          color: subtitleColor,
                         ),
                       ),
                     
@@ -548,7 +555,7 @@ class _RecipesScreenState extends State<RecipesScreen> {
                         'Tap for details',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey[600],
+                          color: subtitleColor,
                         ),
                       ),
                   ],
@@ -698,15 +705,17 @@ class _RecipesScreenState extends State<RecipesScreen> {
   }
 
   Widget _buildLoadingState() {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
     final findingRecipesLabel = TranslationHelper.t('Finding recipes based on your inventory...', 'آپ کی انوینٹری کی بنیاد پر ریسیپیز تلاش کی جا رہی ہے...');
 
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const CircularProgressIndicator(),
+          CircularProgressIndicator(color: _primaryColor),
           const SizedBox(height: 20),
-          Text(findingRecipesLabel),
+          Text(findingRecipesLabel, style: TextStyle(color: textColor)),
         ],
       ),
     );

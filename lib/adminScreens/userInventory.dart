@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'users.dart';
+import '../providers/theme_provider.dart';
 
 class UserInventory extends StatefulWidget {
   final User user;
 
-  const UserInventory({Key? key, required this.user}) : super(key: key);
+  const UserInventory({super.key, required this.user});
 
   @override
   State<UserInventory> createState() => _UserInventoryState();
@@ -599,11 +600,16 @@ class _UserInventoryState extends State<UserInventory> {
   }
 
   void _showDeleteInventoryItemDialog(String itemId, String itemName) {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final dialogBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Inventory Item'),
-        content: Text('Are you sure you want to delete "$itemName" from ${widget.user.username}\'s inventory?'),
+        backgroundColor: dialogBg,
+        title: Text('Delete Inventory Item', style: TextStyle(color: textColor)),
+        content: Text('Are you sure you want to delete "$itemName" from ${widget.user.username}\'s inventory?', style: TextStyle(color: textColor)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -625,11 +631,16 @@ class _UserInventoryState extends State<UserInventory> {
   }
 
   void _showDeleteSavedRecipeDialog(String recipeId, String recipeTitle) {
+    final isDarkMode = ThemeProvider().darkModeEnabled;
+    final dialogBg = isDarkMode ? const Color(0xFF2A2A2A) : Colors.white;
+    final textColor = isDarkMode ? const Color(0xFFE1E1E1) : Colors.black;
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Saved Recipe'),
-        content: Text('Are you sure you want to remove "$recipeTitle" from ${widget.user.username}\'s saved recipes?'),
+        backgroundColor: dialogBg,
+        title: Text('Delete Saved Recipe', style: TextStyle(color: textColor)),
+        content: Text('Are you sure you want to remove "$recipeTitle" from ${widget.user.username}\'s saved recipes?', style: TextStyle(color: textColor)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
